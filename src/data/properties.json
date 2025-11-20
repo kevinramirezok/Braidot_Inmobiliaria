@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "title": "Casa moderna en el centro",
+    "price": 120000,
+    "location": "Ciudad",
+    "images": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca"
+    ],
+    "active": true,
+    "rooms": 3,
+    "type": "Casa",
+    "operation": "Venta",
+    "patio": true,
+    "services": ["Gas", "Luz", "Agua"],
+    "description": "Casa moderna con patio y todos los servicios."
+  },
+  {
+    "id": 2,
+    "title": "Departamento céntrico en alquiler",
+    "price": 45000,
+    "location": "Centro",
+    "images": [
+      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd"
+    ],
+    "active": true,
+    "rooms": 2,
+    "type": "Departamento",
+    "operation": "Alquiler",
+    "patio": false,
+    "services": ["Luz", "Agua"],
+    "description": "Departamento luminoso, ideal para estudiantes o parejas."
+  },
+  {
+    "id": 3,
+    "title": "Terreno baldío en zona norte",
+    "price": 25000,
+    "location": "Zona norte",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca"
+    ],
+    "active": true,
+    "rooms": 0,
+    "type": "Baldío",
+    "operation": "Venta",
+    "patio": false,
+    "services": [],
+    "description": "Terreno baldío ideal para construcción o inversión."
+  }
+]
