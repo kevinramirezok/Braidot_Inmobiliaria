@@ -47,5 +47,101 @@
     "patio": false,
     "services": [],
     "description": "Terreno baldío ideal para construcción o inversión."
+  },
+  {
+    "id": 4,
+    "title": "Casa familiar en barrio sur",
+    "price": 98000,
+    "location": "Barrio sur",
+    "images": [
+      "https://images.unsplash.com/photo-1465101178521-c1a6f3b4e0c1"
+    ],
+    "active": true,
+    "rooms": 4,
+    "type": "Casa",
+    "operation": "Venta",
+    "patio": true,
+    "services": ["Gas", "Luz", "Agua"],
+    "description": "Casa amplia con patio y cochera."
+  },
+  {
+    "id": 5,
+    "title": "Monoambiente en alquiler",
+    "price": 32000,
+    "location": "Microcentro",
+    "images": [
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae"
+    ],
+    "active": true,
+    "rooms": 1,
+    "type": "Monoambiente",
+    "operation": "Alquiler",
+    "patio": false,
+    "services": ["Luz", "Agua"],
+    "description": "Monoambiente ideal para una persona."
+  },
+  {
+    "id": 6,
+    "title": "Departamento en alquiler zona este",
+    "price": 38000,
+    "location": "Zona este",
+    "images": [
+      "https://images.unsplash.com/photo-1519985176271-adb1088fa94c"
+    ],
+    "active": true,
+    "rooms": 2,
+    "type": "Departamento",
+    "operation": "Alquiler",
+    "patio": false,
+    "services": ["Luz", "Agua", "Internet"],
+    "description": "Departamento cómodo y bien ubicado."
+  },
+  {
+    "id": 7,
+    "title": "Quinta con pileta y parque",
+    "price": 150000,
+    "location": "Zona rural",
+    "images": [
+      "https://images.unsplash.com/photo-1465101046530-73398c7f28ca"
+    ],
+    "active": true,
+    "rooms": 5,
+    "type": "Quinta",
+    "operation": "Temporaria",
+    "patio": true,
+    "services": ["Luz", "Agua", "Internet", "Pileta"],
+    "description": "Quinta ideal para vacaciones familiares, con gran parque y pileta."
+  },
+  {
+    "id": 8,
+    "title": "Casa de campo temporaria",
+    "price": 90000,
+    "location": "Campo abierto",
+    "images": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+    ],
+    "active": true,
+    "rooms": 3,
+    "type": "Casa",
+    "operation": "Temporaria",
+    "patio": true,
+    "services": ["Luz", "Agua", "Internet"],
+    "description": "Casa de campo para alquiler temporario, rodeada de naturaleza."
+  },
+  {
+    "id": 9,
+    "title": "Cabaña temporaria en el bosque",
+    "price": 60000,
+    "location": "Bosque norte",
+    "images": [
+      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd"
+    ],
+    "active": true,
+    "rooms": 2,
+    "type": "Cabaña",
+    "operation": "Temporaria",
+    "patio": true,
+    "services": ["Luz", "Agua"],
+    "description": "Cabaña acogedora para escapadas de fin de semana."
   }
 ]
