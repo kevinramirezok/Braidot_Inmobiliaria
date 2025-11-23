@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 const categories = [
   { key: "alquiler", label: "Alquileres" },
@@ -9,16 +9,17 @@ const categories = [
 export default function ModernTabs({ onChange, activeTab }) {
   return (
     <div className="w-full flex justify-center mt-8 mb-6">
-      <div className="flex gap-6 bg-white rounded-full shadow-lg px-4 py-2">
-        {categories.map((cat, idx) => (
+      {/* ✅ Eliminé bg-white - ahora es transparente */}
+      <div className="flex gap-6 px-4 py-2">
+        {categories.map((cat) => (
           <button
             key={cat.key}
             onClick={() => onChange(cat.key)}
             className={`relative px-6 py-2 font-bold text-lg transition-all duration-300 focus:outline-none
               ${activeTab === cat.key
-                ? "text-braidot-blanco1 bg-braidot-primary-bordo shadow-md scale-105"
-                : "text-braidot-primary-bordo bg-braidot-blanco1 hover:bg-braidot-blanco2 hover:scale-105"}
-              rounded-full border border-braidot-primary-bordo`}
+                ? "text-braidot-blanco1 bg-braidot-primary-bordo shadow-xl scale-105"
+                : "text-braidot-primary-bordo bg-white hover:bg-braidot-blanco1 hover:scale-105"}
+              rounded-full border-2 border-braidot-primary-bordo`}
             style={{ zIndex: activeTab === cat.key ? 2 : 1 }}
           >
             {cat.label}
