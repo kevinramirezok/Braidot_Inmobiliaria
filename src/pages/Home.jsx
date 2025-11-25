@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useEffect, useState } from 'react';
 import PropertyFilter from '../components/PropertyFilter';
 import PropertyModal from '../components/PropertyModal';
-import properties from '../data/properties.json';
+import { obtenerPropiedades } from '../services/propertyService';
 import PropertyCard from '../components/PropertyCard';
 import ModernTabs from '../components/ModernTabs';
 import WhyChooseUs from '../components/WhyChooseUs';
@@ -12,6 +13,19 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState('alquiler');
   const [filters, setFilters] = useState({ location: '', rooms: '', type: '', patio: '', maxPrice: '' });
   const [modalProperty, setModalProperty] = useState(null);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function cargarPropiedades() {
+      setLoading(true);
+      const props = await obtenerPropiedades();
+      setProperties(props);
+      setLoading(false);
+    }
+    cargarPropiedades();
+  }, []);
+
   const tabsMap = {
     alquiler: {
       label: 'Propiedades en alquiler',
@@ -33,6 +47,17 @@ const Home = () => {
       data: properties.filter(p => p.operation === 'Temporaria'),
     },
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-braidot-primary-bordo mx-auto mb-4"></div>
+          <p className="text-xl text-braidot-primary-bordo font-semibold">Cargando propiedades...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="flex flex-col items-center min-h-[60vh]">
@@ -56,13 +81,11 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
               {tabsMap[activeTab].data.length > 0 ? (
                 tabsMap[activeTab].data.map(property => (
-                  <div key={property.id} className="bg-white/80 rounded-xl shadow-xl p-4 backdrop-blur-md border border-braidot-neutral-200 hover:scale-105 transition-transform">
-                    <PropertyCard
-                      key={property.id}
-                      property={property}
-                      onViewDetail={setModalProperty}
-                    />
-                  </div>
+                  <PropertyCard
+                    key={property.id}
+                    property={property}
+                    onViewDetail={setModalProperty}
+                  />
                 ))
                 
               ) : (
@@ -76,12 +99,11 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {tabsMap[activeTab].data.length > 0 ? (
               tabsMap[activeTab].data.map(property => (
-                <div key={property.id} className="bg-white/80 rounded-xl shadow-xl p-4 backdrop-blur-md border border-braidot-neutral-200 hover:scale-105 transition-transform">
-                  <PropertyCard
-                    property={property}
-                    onViewDetail={setModalProperty}
-                  />
-                </div>
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                  onViewDetail={setModalProperty}
+                />
               ))
             ) : (
               <div className="col-span-3 text-center text-braidot-negro py-8 bg-white/70 rounded-xl shadow">No hay propiedades disponibles en esta categoría.</div>

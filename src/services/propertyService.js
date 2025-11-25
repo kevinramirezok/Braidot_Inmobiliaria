@@ -1,16 +1,29 @@
-// Servicio para consumir propiedades desde el backend
+import { supabase } from '../lib/supabase.js';
 
-const API_URL = 'http://localhost:4000/api/properties';
+export async function obtenerPropiedades() {
+  const { data, error } = await supabase
+    .from('propiedades')
+    .select('*')
+    .eq('activa', true)
+    .order('created_at', { ascending: false });
 
-export async function getProperties() {
-  const response = await fetch(API_URL);
-  if (!response.ok) throw new Error('Error al obtener propiedades');
-  return await response.json();
-}
+  if (error) {
+    console.error('Error al obtener propiedades:', error);
+    return [];
+  }
 
-export async function getPropertyById(id) {
-  const response = await fetch(`${API_URL}`);
-  if (!response.ok) throw new Error('Error al obtener propiedad');
-  const properties = await response.json();
-  return properties.find(p => p.id === Number(id));
+  return data.map(prop => ({
+    id: prop.id,
+    title: prop.titulo,
+    price: prop.precio,
+    location: prop.ubicacion,
+    images: prop.imagenes,
+    active: prop.activa,
+    rooms: prop.ambientes,
+    type: prop.tipo,
+    operation: prop.operation,
+    patio: prop.tiene_patio,
+    services: prop.servicios,
+    description: prop.descripcion
+  }));
 }
