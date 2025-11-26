@@ -5,7 +5,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      // tailwind.config.js - REEMPLAZÁ todo el extend.colors
       colors: {
         braidot: {
           'primary-bordo': '#5B0F0F',

@@ -6,7 +6,6 @@ import { obtenerPropiedades } from '../services/propertyService';
 import PropertyCard from '../components/PropertyCard';
 import ModernTabs from '../components/ModernTabs';
 import WhyChooseUs from '../components/WhyChooseUs';
-import Testimonials from '../components/Testimonials';
 
 
 const Home = () => {
@@ -112,7 +111,6 @@ const Home = () => {
         )}
         <PropertyModal property={modalProperty} onClose={() => setModalProperty(null)} />
       </div>
-      <Testimonials />
       <WhyChooseUs />
     </section>
   );

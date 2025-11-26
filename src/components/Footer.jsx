@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer id="nosotros" className="bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light text-white mt-16">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Columna 1: Branding */}
           <div>
             <h3 className="text-2xl font-bold mb-4">
@@ -36,33 +36,6 @@ const Footer = () => {
                 </svg>
               </a>
             </div>
-          </div>
-
-          {/* Columna 2: Enlaces Rápidos */}
-          <div>
-            <h4 className="text-lg font-bold mb-4">Enlaces Rápidos</h4>
-            <ul className="space-y-2 text-sm text-white/80">
-              <li>
-                <a href="#alquileres" className="hover:text-white transition-colors">
-                  Propiedades en Alquiler
-                </a>
-              </li>
-              <li>
-                <a href="#ventas" className="hover:text-white transition-colors">
-                  Propiedades en Venta
-                </a>
-              </li>
-              <li>
-                <a href="#temporarias" className="hover:text-white transition-colors">
-                  Quintas Temporarias
-                </a>
-              </li>
-              <li>
-                <a href="#nosotros" className="hover:text-white transition-colors">
-                  Sobre Nosotros
-                </a>
-              </li>
-            </ul>
           </div>
 
           {/* Columna 3: Contacto */}
