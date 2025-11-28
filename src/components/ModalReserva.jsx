@@ -61,7 +61,9 @@ const ModalReserva = ({ property, onClose }) => {
   const calcularNoches = () => {
     if (!fechaInicio || !fechaFin) return 0;
     const diff = fechaFin - fechaInicio;
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    const noches = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    // Si es el mismo día, cuenta como 1 día de alquiler
+    return noches === 0 ? 1 : noches;
   };
 
   const calcularTotal = () => {
@@ -69,13 +71,13 @@ const ModalReserva = ({ property, onClose }) => {
   };
 
   const handleContinuar = () => {
-    if (!fechaInicio || !fechaFin) {
-      alert('Por favor selecciona las fechas de check-in y check-out');
+    if (!fechaInicio) {
+      alert('Por favor selecciona la fecha de check-in');
       return;
     }
-    if (calcularNoches() < 1) {
-      alert('La reserva debe ser de al menos 1 noche');
-      return;
+    // Si no hay fecha fin, usar la misma fecha de inicio (1 día)
+    if (!fechaFin) {
+      setFechaFin(fechaInicio);
     }
     setStep(2);
   };
@@ -109,8 +111,8 @@ const ModalReserva = ({ property, onClose }) => {
       const mensaje = `¡Hola! Me gustaría reservar la propiedad *${property.title}*
 
 📅 Check-in: ${fechaInicio.toLocaleDateString('es-AR')}
-📅 Check-out: ${fechaFin.toLocaleDateString('es-AR')}
-🌙 Noches: ${calcularNoches()}
+📅 Check-out: ${(fechaFin || fechaInicio).toLocaleDateString('es-AR')}
+📆 Días: ${calcularNoches()}
 👥 Personas: ${formData.personas}
 💰 Total: $${calcularTotal().toLocaleString('es-AR')}
 
@@ -207,15 +209,15 @@ ${formData.mensaje ? `\n📝 Mensaje: ${formData.mensaje}` : ''}`;
                       <div className="flex justify-between text-sm">
                         <span className="text-braidot-neutral-600">Check-out:</span>
                         <span className="font-semibold text-braidot-negro">
-                          {fechaFin ? fechaFin.toLocaleDateString('es-AR') : '-'}
+                          {fechaFin ? fechaFin.toLocaleDateString('es-AR') : (fechaInicio ? fechaInicio.toLocaleDateString('es-AR') : '-')}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm pt-3 border-t border-braidot-neutral-200">
-                        <span className="text-braidot-neutral-600">Noches:</span>
+                        <span className="text-braidot-neutral-600">Días:</span>
                         <span className="font-semibold text-braidot-negro">{calcularNoches()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-braidot-neutral-600">Precio por noche:</span>
+                        <span className="text-braidot-neutral-600">Precio por día:</span>
                         <span className="font-semibold text-braidot-negro">
                           ${property.price.toLocaleString('es-AR')}
                         </span>
@@ -348,10 +350,10 @@ ${formData.mensaje ? `\n📝 Mensaje: ${formData.mensaje}` : ''}`;
                       </div>
                       <div className="flex justify-between">
                         <span className="text-braidot-neutral-600">Check-out:</span>
-                        <span className="font-semibold">{fechaFin.toLocaleDateString('es-AR')}</span>
+                        <span className="font-semibold">{(fechaFin || fechaInicio).toLocaleDateString('es-AR')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-braidot-neutral-600">Noches:</span>
+                        <span className="text-braidot-neutral-600">Días:</span>
                         <span className="font-semibold">{calcularNoches()}</span>
                       </div>
                       <div className="flex justify-between pt-3 border-t border-braidot-neutral-200">

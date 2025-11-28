@@ -3,6 +3,7 @@ import ModalReserva from './ModalReserva';
 
 const PropertyModal = ({ property, onClose }) => {
   const [mostrarModalReserva, setMostrarModalReserva] = useState(false);
+  const [imagenActual, setImagenActual] = useState(0);
 
   // Bloquear scroll del body cuando el modal está abierto
   useEffect(() => {
@@ -20,9 +21,16 @@ const PropertyModal = ({ property, onClose }) => {
     if (property.operation === 'Temporaria') {
       setMostrarModalReserva(true);
     } else {
-      // Para ventas y alquileres, mensaje de WhatsApp directo
       window.open(`https://wa.me/5493482XXXXXX?text=Consulta por: ${property.title}`, '_blank');
     }
+  };
+
+  const siguienteImagen = () => {
+    setImagenActual((prev) => (prev + 1) % property.images.length);
+  };
+
+  const anteriorImagen = () => {
+    setImagenActual((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
   return (
@@ -35,7 +43,7 @@ const PropertyModal = ({ property, onClose }) => {
         onClick={onClose}
       >
         <div 
-          className="bg-white rounded-2xl w-full max-w-2xl relative shadow-2xl max-h-[90vh] flex flex-col"
+          className="bg-white rounded-2xl w-full max-w-4xl relative shadow-2xl max-h-[90vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Botón cerrar */}
@@ -48,20 +56,71 @@ const PropertyModal = ({ property, onClose }) => {
             </svg>
           </button>
 
-          {/* Imagen destacada */}
-          <div className="relative h-64 bg-braidot-neutral-900 flex-shrink-0">
+          {/* Carrusel de imágenes */}
+          <div className="relative h-80 bg-braidot-neutral-900 flex-shrink-0">
             <img 
-              src={property.images[0]} 
-              alt={property.title} 
+              src={property.images[imagenActual]} 
+              alt={`${property.title} - Imagen ${imagenActual + 1}`}
               className="w-full h-full object-cover"
             />
-            {/* Gradiente sobre imagen */}
+            
+            {/* Gradiente */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             
-            {/* Badge de operación sobre imagen */}
+            {/* Badge de operación */}
             <div className="absolute bottom-4 left-4 bg-braidot-primary-bordo text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
               {property.operation}
             </div>
+
+            {/* Contador de imágenes */}
+            {property.images.length > 1 && (
+              <>
+                <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                  {imagenActual + 1} / {property.images.length}
+                </div>
+
+                {/* Botones navegación */}
+                <button
+                  onClick={anteriorImagen}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-braidot-negro rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={siguienteImagen}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-braidot-negro rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )}
+
+            {/* Thumbnails */}
+            {property.images.length > 1 && (
+              <div className="absolute bottom-4 right-4 flex gap-2">
+                {property.images.slice(0, 5).map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setImagenActual(index)}
+                    className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                      imagenActual === index ? 'border-white scale-110' : 'border-white/50 hover:border-white'
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+                {property.images.length > 5 && (
+                  <div className="w-12 h-12 rounded-lg bg-black/60 backdrop-blur-sm flex items-center justify-center text-white text-xs font-bold border-2 border-white/50">
+                    +{property.images.length - 5}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Contenido scrolleable */}
@@ -80,10 +139,10 @@ const PropertyModal = ({ property, onClose }) => {
                   <span className="text-lg font-semibold">{property.localidad}, {property.provincia}</span>
                 </div>
                 {property.direccion && (
-                  <p className="text-sm text-braidot-neutral-500 ml-7">{property.direccion}</p>
+                  <p className="text-sm text-braidot-neutral-500 ml-7">📍 {property.direccion}</p>
                 )}
                 {property.barrio && (
-                  <p className="text-sm text-braidot-neutral-500 ml-7">Barrio: {property.barrio}</p>
+                  <p className="text-sm text-braidot-neutral-500 ml-7">🏘️ Barrio: {property.barrio}</p>
                 )}
               </div>
             </div>
@@ -121,34 +180,90 @@ const PropertyModal = ({ property, onClose }) => {
             </div>
 
             {/* Características principales */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-braidot-neutral-50 rounded-xl p-4 text-center">
-                <svg className="w-8 h-8 mx-auto mb-2 text-braidot-primary-bordo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-braidot-negro mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <p className="text-2xl font-bold text-braidot-primary-bordo">{property.rooms}</p>
-                <p className="text-xs text-braidot-neutral-600">Habitaciones</p>
-              </div>
+                Características
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {property.ambientes > 0 && (
+                  <div className="bg-braidot-neutral-50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <svg className="w-5 h-5 text-braidot-primary-bordo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                      <span className="text-sm text-braidot-neutral-600">Ambientes</span>
+                    </div>
+                    <p className="text-2xl font-bold text-braidot-primary-bordo">{property.ambientes}</p>
+                  </div>
+                )}
 
-              <div className="bg-braidot-neutral-50 rounded-xl p-4 text-center">
-                <svg className="w-8 h-8 mx-auto mb-2 text-braidot-primary-bordo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <p className="text-2xl font-bold text-braidot-primary-bordo">{property.type}</p>
-                <p className="text-xs text-braidot-neutral-600">Tipo</p>
-              </div>
+                {property.banos > 0 && (
+                  <div className="bg-braidot-neutral-50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🚿</span>
+                      <span className="text-sm text-braidot-neutral-600">Baños</span>
+                    </div>
+                    <p className="text-2xl font-bold text-braidot-primary-bordo">{property.banos}</p>
+                  </div>
+                )}
 
-              <div className="bg-braidot-neutral-50 rounded-xl p-4 text-center">
-                <svg className="w-8 h-8 mx-auto mb-2 text-braidot-primary-bordo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-2xl font-bold text-braidot-primary-bordo">{property.patio ? 'Sí' : 'No'}</p>
-                <p className="text-xs text-braidot-neutral-600">Patio</p>
+                {property.cocheras > 0 && (
+                  <div className="bg-braidot-neutral-50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🚗</span>
+                      <span className="text-sm text-braidot-neutral-600">Cocheras</span>
+                    </div>
+                    <p className="text-2xl font-bold text-braidot-primary-bordo">{property.cocheras}</p>
+                  </div>
+                )}
+
+                <div className="bg-braidot-neutral-50 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-braidot-primary-bordo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span className="text-sm text-braidot-neutral-600">Tipo</span>
+                  </div>
+                  <p className="text-xl font-bold text-braidot-primary-bordo">{property.tipo}</p>
+                </div>
+
+                {property.metros_cuadrados && (
+                  <div className="bg-braidot-neutral-50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">📐</span>
+                      <span className="text-sm text-braidot-neutral-600">M² cubiertos</span>
+                    </div>
+                    <p className="text-2xl font-bold text-braidot-primary-bordo">{property.metros_cuadrados}m²</p>
+                  </div>
+                )}
+
+                {property.metros_terreno && (
+                  <div className="bg-braidot-neutral-50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🏞️</span>
+                      <span className="text-sm text-braidot-neutral-600">M² terreno</span>
+                    </div>
+                    <p className="text-2xl font-bold text-braidot-primary-bordo">{property.metros_terreno}m²</p>
+                  </div>
+                )}
+
+                {property.tiene_patio && (
+                  <div className="bg-braidot-neutral-50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">🌳</span>
+                      <span className="text-sm text-braidot-neutral-600">Patio</span>
+                    </div>
+                    <p className="text-xl font-bold text-green-600">Sí</p>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Servicios */}
-            {property.services && property.services.length > 0 && (
+            {property.servicios && property.servicios.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-braidot-negro mb-3 flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,24 +272,27 @@ const PropertyModal = ({ property, onClose }) => {
                   Servicios incluidos
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {property.services.map((service, index) => (
+                  {property.servicios.map((service, index) => (
                     <span 
                       key={index}
-                      className="bg-braidot-primary-bordo/10 text-braidot-primary-bordo px-3 py-1.5 rounded-full text-sm font-medium"
+                      className="bg-braidot-primary-bordo/10 text-braidot-primary-bordo px-3 py-1.5 rounded-full text-sm font-medium border border-braidot-primary-bordo/20"
                     >
-                      {service}
+                      ✓ {service}
                     </span>
                   ))}
                 </div>
+                <p className="text-xs text-braidot-neutral-600 mt-3 italic">
+                  💡 Para más información sobre servicios, contactate por WhatsApp
+                </p>
               </div>
             )}
 
             {/* Descripción */}
-            {property.description && (
+            {property.descripcion && (
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-braidot-negro mb-3">Descripción</h3>
                 <p className="text-braidot-neutral-700 leading-relaxed">
-                  {property.description}
+                  {property.descripcion}
                 </p>
               </div>
             )}
@@ -192,12 +310,14 @@ const PropertyModal = ({ property, onClose }) => {
                 </svg>
                 Consultar
               </button>
-              <button 
-                onClick={handleReservar}
-                className="bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white px-6 py-3.5 rounded-xl font-semibold transition-colors duration-300 shadow-md"
-              >
-                {property.operation === 'Temporaria' ? 'Ver disponibilidad' : 'Reservar ahora'}
-              </button>
+              {property.operation === 'Temporaria' && (
+                <button 
+                  onClick={handleReservar}
+                  className="bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white px-6 py-3.5 rounded-xl font-semibold transition-colors duration-300 shadow-md"
+                >
+                  Ver disponibilidad
+                </button>
+              )}
             </div>
           </div>
         </div>

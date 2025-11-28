@@ -300,7 +300,7 @@ const ReservasAdmin = () => {
                           <p className="text-braidot-negro">
                             📅 {new Date(reserva.fecha_inicio).toLocaleDateString('es-AR')} → {new Date(reserva.fecha_fin).toLocaleDateString('es-AR')}
                           </p>
-                          <p className="text-braidot-neutral-600">🌙 {reserva.cantidad_noches} {reserva.cantidad_noches === 1 ? 'noche' : 'noches'}</p>
+                          <p className="text-braidot-neutral-600">📆 {reserva.cantidad_noches} {reserva.cantidad_noches === 1 ? 'día' : 'días'}</p>
                           <p className="text-braidot-neutral-600">👥 {reserva.cantidad_personas} {reserva.cantidad_personas === 1 ? 'persona' : 'personas'}</p>
                         </div>
 
