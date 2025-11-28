@@ -25,7 +25,9 @@ src/
 ├── components/
 │   ├── AdminSidebar.jsx
 │   ├── Calendar.jsx
+│   ├── CalendarioReservas.jsx   # Calendario avanzado para reservas
 │   ├── Footer.jsx
+│   ├── ModalReserva.jsx         # Modal para reservar propiedades
 │   ├── ModernTabs.jsx
 │   ├── Navbar.jsx
 │   ├── PropertyCard.jsx
@@ -45,15 +47,19 @@ src/
 │   └── supabase.js        # Configuración de Supabase
 ├── pages/
 │   ├── Home.jsx           # Página principal
+│   ├── PropiedadesPorCategoria.jsx # Listado por categoría
 │   └── admin/
 │       ├── Dashboard.jsx
 │       ├── Login.jsx
-│       └── PropiedadesAdmin.jsx
+│       ├── PropiedadesAdmin.jsx
+│       └── ReservasAdmin.jsx     # Panel admin para reservas
 ├── services/
 │   └── propertyService.js # Lógica de propiedades (API)
 ```
 
 ## Principales funcionalidades
+
+## Funcionalidades implementadas
 - Visualización de propiedades por categoría (alquiler, venta, temporaria)
 - Filtros avanzados y búsqueda en la sección de ventas
 - Modal para ver detalles de cada propiedad
@@ -62,8 +68,15 @@ src/
 - Botón flotante de WhatsApp para contacto directo
 - Panel de administración con login y gestión de propiedades/reservas
 - Formulario para alta/edición de propiedades
-- Gestión de reservas desde el panel admin
+- Sistema de reservas para quintas temporarias (calendario interactivo y formulario)
+- Panel admin para gestionar reservas (confirmar, rechazar, cancelar)
 - Estadísticas y acciones rápidas en el dashboard admin
+
+## Funcionalidades pendientes
+- Gestión de consultas (ver y responder formularios de contacto)
+- Favoritos (permitir que usuarios guarden propiedades)
+- Comparador (comparar hasta 3 propiedades lado a lado)
+- Galería de imágenes tipo carrusel para múltiples fotos
 
 ## Instalación y uso
 1. Instala dependencias:

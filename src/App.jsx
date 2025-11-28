@@ -1,13 +1,15 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import PropiedadesPorCategoria from './pages/PropiedadesPorCategoria';
 import WhatsappFloat from './components/WhatsappFloat';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import PropiedadesAdmin from './pages/admin/PropiedadesAdmin';
+import ReservasAdmin from './pages/admin/ReservasAdmin';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -44,6 +46,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Página principal */}
           <Route path="/" element={
             <>
               <Navbar />
@@ -54,6 +57,18 @@ function App() {
             </>
           } />
           
+          {/* Páginas de propiedades por categoría */}
+          <Route path="/propiedades/:categoria" element={
+            <>
+              <Navbar />
+              <PropiedadesPorCategoria />
+              <Footer />
+              <WhatsappFloat />
+              <AdminButton />
+            </>
+          } />
+          
+          {/* Rutas de administración */}
           <Route path="/admin/login" element={<Login />} />
           
           <Route path="/admin/dashboard" element={
@@ -65,6 +80,12 @@ function App() {
           <Route path="/admin/propiedades" element={
             <ProtectedRoute>
               <PropiedadesAdmin />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/reservas" element={
+            <ProtectedRoute>
+              <ReservasAdmin />
             </ProtectedRoute>
           } />
         </Routes>

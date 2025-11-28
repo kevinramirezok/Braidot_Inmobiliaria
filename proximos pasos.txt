@@ -1,0 +1,21 @@
+Funcionalidades nuevas
+
+Sistema de reservas para quintas temporarias (calendario interactivo)
+Gestión de consultas (ver formularios de contacto)
+Favoritos (que usuarios guarden propiedades)
+Comparador (comparar hasta 3 propiedades lado a lado)
+Galería de imágenes (carrusel para múltiples fotos)
+
+Mejoras técnicas
+
+Paginación en listado de propiedades
+Optimización de imágenes (compresión automática al subir)
+SEO básico (meta tags, sitemap)
+Tests (validaciones de formularios)
+Deploy a producción (VercelNetlify)
+
+Ajustes de diseño
+
+Mejorar algo del dashboard o formularios
+Ajustar colores o estilos
+Experiencia móvil

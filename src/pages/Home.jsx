@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropertyFilter from '../components/PropertyFilter';
 import PropertyModal from '../components/PropertyModal';
 import { obtenerPropiedades } from '../services/propertyService';
@@ -9,6 +10,7 @@ import WhyChooseUs from '../components/WhyChooseUs';
 
 
 const Home = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('alquiler');
   const [filters, setFilters] = useState({ location: '', rooms: '', type: '', patio: '', maxPrice: '' });
   const [modalProperty, setModalProperty] = useState(null);
@@ -28,7 +30,9 @@ const Home = () => {
   const tabsMap = {
     alquiler: {
       label: 'Propiedades en alquiler',
-      data: properties.filter(p => p.operation === 'Alquiler'),
+      data: properties.filter(p => p.operation === 'Alquiler').slice(0, 3), // Solo 3
+      total: properties.filter(p => p.operation === 'Alquiler').length,
+      route: '/propiedades/alquiler'
     },
     venta: {
       label: 'Propiedades en venta',
@@ -39,11 +43,15 @@ const Home = () => {
         if (filters.patio && String(!!p.patio) !== filters.patio) return false;
         if (filters.maxPrice && p.price > Number(filters.maxPrice)) return false;
         return true;
-      }),
+      }).slice(0, 3), // Solo 3
+      total: properties.filter(p => p.operation === 'Venta').length,
+      route: '/propiedades/venta'
     },
     temporaria: {
       label: 'Quintas y temporarias',
-      data: properties.filter(p => p.operation === 'Temporaria'),
+      data: properties.filter(p => p.operation === 'Temporaria').slice(0, 3), // Solo 3
+      total: properties.filter(p => p.operation === 'Temporaria').length,
+      route: '/propiedades/temporaria'
     },
   };
 
@@ -73,7 +81,23 @@ const Home = () => {
             </div>
         <ModernTabs activeTab={activeTab} onChange={setActiveTab} />
       <div className="w-full max-w-5xl">
-        <h2 className="text-2xl font-bold text-braidot-primary-bordo mb-4 bg-white/60 rounded-lg px-4 py-2 inline-block backdrop-blur-md shadow">{tabsMap[activeTab].label}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-braidot-primary-bordo bg-white/60 rounded-lg px-4 py-2 inline-block backdrop-blur-md shadow">
+            {tabsMap[activeTab].label}
+          </h2>
+          {tabsMap[activeTab].total > 3 && (
+            <button
+              onClick={() => navigate(tabsMap[activeTab].route)}
+              className="bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+            >
+              Ver todas ({tabsMap[activeTab].total})
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+        </div>
+
         {activeTab === 'venta' && (
           <>
             <PropertyFilter filters={filters} setFilters={setFilters} />

@@ -9,7 +9,9 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     descripcion: '',
     operation: 'Venta',
     precio: '',
-    ubicacion: '',
+    localidad: '',
+    provincia: '',
+    direccion: '',
     barrio: '',
     ambientes: 1,
     banos: 1,
@@ -21,7 +23,9 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     tiene_patio: false,
     imagenes: [],
     activa: true,
-    destacada: false
+    destacada: false,
+    checkin_hora: '14:00',
+    checkout_hora: '10:00'
   });
 
   const [urlsImagenes, setUrlsImagenes] = useState('');
@@ -35,7 +39,9 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
         descripcion: propiedad.descripcion || '',
         operation: propiedad.operation || 'Venta',
         precio: propiedad.precio || '',
-        ubicacion: propiedad.ubicacion || '',
+        localidad: propiedad.localidad || '',
+        provincia: propiedad.provincia || '',
+        direccion: propiedad.direccion || '',
         barrio: propiedad.barrio || '',
         ambientes: propiedad.ambientes || 1,
         banos: propiedad.banos || 1,
@@ -47,7 +53,9 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
         tiene_patio: propiedad.tiene_patio || false,
         imagenes: propiedad.imagenes || [],
         activa: propiedad.activa !== undefined ? propiedad.activa : true,
-        destacada: propiedad.destacada || false
+        destacada: propiedad.destacada || false,
+        checkin_hora: propiedad.checkin_hora || '14:00',
+        checkout_hora: propiedad.checkout_hora || '10:00'
       });
       setUrlsImagenes(propiedad.imagenes?.join('\n') || '');
       setPrevisualizaciones(propiedad.imagenes || []);
@@ -71,13 +79,11 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     }));
   };
 
-  // Manejar selección de archivos
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    // Validar tamaño (máximo 5MB por imagen)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     const archivosValidos = files.filter(file => {
       if (file.size > maxSize) {
         alert(`La imagen ${file.name} supera los 5MB`);
@@ -88,7 +94,6 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
 
     setArchivosImagenes(prev => [...prev, ...archivosValidos]);
 
-    // Crear previsualizaciones
     archivosValidos.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -98,13 +103,11 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     });
   };
 
-  // Eliminar imagen de previsualización
   const eliminarImagen = (index) => {
     setPrevisualizaciones(prev => prev.filter((_, i) => i !== index));
     setArchivosImagenes(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Subir imágenes a Supabase Storage
   const subirImagenes = async () => {
     if (archivosImagenes.length === 0) return [];
 
@@ -126,7 +129,6 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
 
         if (error) throw error;
 
-        // Obtener URL pública
         const { data: { publicUrl } } = supabase.storage
           .from('propiedades-imagenes')
           .getPublicUrl(filePath);
@@ -149,16 +151,8 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      // Subir archivos de imagen
       const urlsArchivos = await subirImagenes();
-
-      // Procesar URLs de texto
-      const urlsTexto = urlsImagenes
-        .split('\n')
-        .map(url => url.trim())
-        .filter(url => url.length > 0);
-
-      // Combinar todas las URLs
+      const urlsTexto = urlsImagenes.split('\n').map(url => url.trim()).filter(url => url.length > 0);
       const todasLasImagenes = [...urlsTexto, ...urlsArchivos];
 
       if (todasLasImagenes.length === 0) {
@@ -181,17 +175,10 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
       let error;
 
       if (propiedad) {
-        // Actualizar
-        const result = await supabase
-          .from('propiedades')
-          .update(dataToSave)
-          .eq('id', propiedad.id);
+        const result = await supabase.from('propiedades').update(dataToSave).eq('id', propiedad.id);
         error = result.error;
       } else {
-        // Crear nueva
-        const result = await supabase
-          .from('propiedades')
-          .insert([dataToSave]);
+        const result = await supabase.from('propiedades').insert([dataToSave]);
         error = result.error;
       }
 
@@ -208,7 +195,13 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     }
   };
 
-  const serviciosDisponibles = ['Gas', 'Luz', 'Agua', 'Internet', 'Cable', 'Teléfono'];
+  const serviciosDisponibles = [
+    'Luz', 'Agua', 'Internet', 'Gas natural', 'Cloacas', 'Agua corriente',
+    'Asfalto', 'Cochera/Garaje', 'Piscina/Pileta', 'Quincho/Parrilla',
+    'Aire acondicionado', 'Calefacción', 'Lavadero', 'Balcón/Terraza',
+    'WiFi', 'Ropa de cama', 'Cocina equipada', 'Espacio verde'
+  ];
+
   const tiposPropiedad = ['Casa', 'Departamento', 'Quinta', 'Baldío', 'Local', 'Oficina', 'Campo', 'Monoambiente', 'Cabaña'];
 
   return (
@@ -218,10 +211,7 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
           <h2 className="text-2xl font-bold text-braidot-negro">
             {propiedad ? 'Editar Propiedad' : 'Nueva Propiedad'}
           </h2>
-          <button
-            onClick={onClose}
-            className="text-braidot-neutral-500 hover:text-braidot-negro transition-colors"
-          >
+          <button onClick={onClose} className="text-braidot-neutral-500 hover:text-braidot-negro transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -235,45 +225,23 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Título *
-                </label>
-                <input
-                  type="text"
-                  name="titulo"
-                  value={formData.titulo}
-                  onChange={handleChange}
-                  required
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Título *</label>
+                <input type="text" name="titulo" value={formData.titulo} onChange={handleChange} required
                   className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                  placeholder="Ej: Casa moderna en el centro"
-                />
+                  placeholder="Ej: Casa moderna en el centro" />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Descripción
-                </label>
-                <textarea
-                  name="descripcion"
-                  value={formData.descripcion}
-                  onChange={handleChange}
-                  rows="3"
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Descripción</label>
+                <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows="3"
                   className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                  placeholder="Describe la propiedad..."
-                />
+                  placeholder="Describe la propiedad..." />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Operación *
-                </label>
-                <select
-                  name="operation"
-                  value={formData.operation}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                >
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Operación *</label>
+                <select name="operation" value={formData.operation} onChange={handleChange} required
+                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo">
                   <option value="Venta">Venta</option>
                   <option value="Alquiler">Alquiler</option>
                   <option value="Temporaria">Temporaria</option>
@@ -281,37 +249,36 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Tipo de Propiedad *
-                </label>
-                <select
-                  name="tipo"
-                  value={formData.tipo}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                >
-                  {tiposPropiedad.map(tipo => (
-                    <option key={tipo} value={tipo}>{tipo}</option>
-                  ))}
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Tipo de Propiedad *</label>
+                <select name="tipo" value={formData.tipo} onChange={handleChange} required
+                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo">
+                  {tiposPropiedad.map(tipo => <option key={tipo} value={tipo}>{tipo}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Precio *
-                </label>
-                <input
-                  type="number"
-                  name="precio"
-                  value={formData.precio}
-                  onChange={handleChange}
-                  required
-                  step="0.01"
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Precio *</label>
+                <input type="number" name="precio" value={formData.precio} onChange={handleChange} required step="0.01"
                   className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                  placeholder="120000"
-                />
+                  placeholder="120000" />
               </div>
+
+              {/* Horarios solo para Temporaria */}
+              {formData.operation === 'Temporaria' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-braidot-negro mb-2">Hora Check-in</label>
+                    <input type="time" name="checkin_hora" value={formData.checkin_hora} onChange={handleChange}
+                      className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-braidot-negro mb-2">Hora Check-out</label>
+                    <input type="time" name="checkout_hora" value={formData.checkout_hora} onChange={handleChange}
+                      className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo" />
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -321,32 +288,31 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Ubicación *
-                </label>
-                <input
-                  type="text"
-                  name="ubicacion"
-                  value={formData.ubicacion}
-                  onChange={handleChange}
-                  required
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Localidad *</label>
+                <input type="text" name="localidad" value={formData.localidad} onChange={handleChange} required
                   className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                  placeholder="Ciudad, Zona"
-                />
+                  placeholder="Ej: Vera" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Barrio
-                </label>
-                <input
-                  type="text"
-                  name="barrio"
-                  value={formData.barrio}
-                  onChange={handleChange}
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Provincia *</label>
+                <input type="text" name="provincia" value={formData.provincia} onChange={handleChange} required
                   className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                  placeholder="Barrio específico"
-                />
+                  placeholder="Ej: Santa Fe" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Dirección</label>
+                <input type="text" name="direccion" value={formData.direccion} onChange={handleChange}
+                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
+                  placeholder="Ej: Av. San Martín 1234 (opcional)" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Barrio</label>
+                <input type="text" name="barrio" value={formData.barrio} onChange={handleChange}
+                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
+                  placeholder="Barrio específico (opcional)" />
               </div>
             </div>
           </div>
@@ -357,56 +323,27 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Ambientes
-                </label>
-                <input
-                  type="number"
-                  name="ambientes"
-                  value={formData.ambientes}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                />
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Ambientes</label>
+                <input type="number" name="ambientes" value={formData.ambientes} onChange={handleChange} min="0"
+                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Baños
-                </label>
-                <input
-                  type="number"
-                  name="banos"
-                  value={formData.banos}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                />
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Baños</label>
+                <input type="number" name="banos" value={formData.banos} onChange={handleChange} min="0"
+                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Cocheras
-                </label>
-                <input
-                  type="number"
-                  name="cocheras"
-                  value={formData.cocheras}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                />
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Cocheras</label>
+                <input type="number" name="cocheras" value={formData.cocheras} onChange={handleChange} min="0"
+                  className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo" />
               </div>
 
               <div className="flex items-end">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="tiene_patio"
-                    checked={formData.tiene_patio}
-                    onChange={handleChange}
-                    className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded"
-                  />
+                  <input type="checkbox" name="tiene_patio" checked={formData.tiene_patio} onChange={handleChange}
+                    className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded" />
                   <span className="text-sm font-medium text-braidot-negro">Tiene Patio</span>
                 </label>
               </div>
@@ -414,33 +351,17 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Metros Cuadrados
-                </label>
-                <input
-                  type="number"
-                  name="metros_cuadrados"
-                  value={formData.metros_cuadrados}
-                  onChange={handleChange}
-                  step="0.01"
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Metros Cuadrados</label>
+                <input type="number" name="metros_cuadrados" value={formData.metros_cuadrados} onChange={handleChange} step="0.01"
                   className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                  placeholder="150.50"
-                />
+                  placeholder="150.50" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-braidot-negro mb-2">
-                  Metros Terreno
-                </label>
-                <input
-                  type="number"
-                  name="metros_terreno"
-                  value={formData.metros_terreno}
-                  onChange={handleChange}
-                  step="0.01"
+                <label className="block text-sm font-medium text-braidot-negro mb-2">Metros Terreno</label>
+                <input type="number" name="metros_terreno" value={formData.metros_terreno} onChange={handleChange} step="0.01"
                   className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo"
-                  placeholder="200.00"
-                />
+                  placeholder="200.00" />
               </div>
             </div>
           </div>
@@ -451,72 +372,44 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {serviciosDisponibles.map(servicio => (
                 <label key={servicio} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.servicios.includes(servicio)}
-                    onChange={() => handleServiciosChange(servicio)}
-                    className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded"
-                  />
+                  <input type="checkbox" checked={formData.servicios.includes(servicio)} onChange={() => handleServiciosChange(servicio)}
+                    className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded" />
                   <span className="text-sm text-braidot-negro">{servicio}</span>
                 </label>
               ))}
             </div>
+            <p className="text-xs text-braidot-neutral-600 mt-4 italic">
+              💡 Para más información sobre servicios, los clientes pueden contactarse por WhatsApp
+            </p>
           </div>
 
           {/* Imágenes */}
           <div className="bg-braidot-neutral-50 p-4 rounded-lg border border-braidot-neutral-200">
             <h3 className="font-semibold text-braidot-negro mb-4">Imágenes *</h3>
             
-            {/* Subir archivos */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-braidot-negro mb-2">
-                Subir Imágenes desde Computadora (Recomendado)
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleFileChange}
-                className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-braidot-primary-bordo file:text-white hover:file:bg-braidot-primary-bordo-light file:cursor-pointer"
-              />
-              <p className="text-xs text-braidot-neutral-600 mt-1">
-                Máximo 5MB por imagen. Puedes seleccionar múltiples archivos.
-              </p>
+              <label className="block text-sm font-medium text-braidot-negro mb-2">Subir Imágenes desde Computadora (Recomendado)</label>
+              <input type="file" accept="image/*" multiple onChange={handleFileChange}
+                className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-braidot-primary-bordo file:text-white hover:file:bg-braidot-primary-bordo-light file:cursor-pointer" />
+              <p className="text-xs text-braidot-neutral-600 mt-1">Máximo 5MB por imagen. Puedes seleccionar múltiples archivos.</p>
             </div>
 
-            {/* URLs (opcional) */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-braidot-negro mb-2">
-                O pegar URLs de imágenes (Opcional)
-              </label>
-              <textarea
-                value={urlsImagenes}
-                onChange={(e) => setUrlsImagenes(e.target.value)}
-                rows="3"
+              <label className="block text-sm font-medium text-braidot-negro mb-2">O pegar URLs de imágenes (Opcional)</label>
+              <textarea value={urlsImagenes} onChange={(e) => setUrlsImagenes(e.target.value)} rows="3"
                 className="w-full px-3 py-2 border border-braidot-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-braidot-primary-bordo focus:border-braidot-primary-bordo font-mono text-sm"
-                placeholder="Una URL por línea:&#10;https://ejemplo.com/imagen1.jpg&#10;https://ejemplo.com/imagen2.jpg"
-              />
+                placeholder="Una URL por línea:&#10;https://ejemplo.com/imagen1.jpg&#10;https://ejemplo.com/imagen2.jpg" />
             </div>
 
-            {/* Previsualizaciones */}
             {previsualizaciones.length > 0 && (
               <div>
-                <p className="text-sm font-medium text-braidot-negro mb-3">
-                  Imágenes ({previsualizaciones.length})
-                </p>
+                <p className="text-sm font-medium text-braidot-negro mb-3">Imágenes ({previsualizaciones.length})</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {previsualizaciones.map((url, index) => (
                     <div key={index} className="relative group">
-                      <img
-                        src={url}
-                        alt={`Previsualización ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-md border border-braidot-neutral-300"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => eliminarImagen(index)}
-                        className="absolute top-1 right-1 bg-braidot-negro/80 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
+                      <img src={url} alt={`Previsualización ${index + 1}`} className="w-full h-24 object-cover rounded-md border border-braidot-neutral-300" />
+                      <button type="button" onClick={() => eliminarImagen(index)}
+                        className="absolute top-1 right-1 bg-braidot-negro/80 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -533,24 +426,14 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
             <h3 className="font-semibold text-braidot-negro mb-4">Estado</h3>
             <div className="flex gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="activa"
-                  checked={formData.activa}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded"
-                />
+                <input type="checkbox" name="activa" checked={formData.activa} onChange={handleChange}
+                  className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded" />
                 <span className="text-sm font-medium text-braidot-negro">Activa (visible en web)</span>
               </label>
 
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="destacada"
-                  checked={formData.destacada}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded"
-                />
+                <input type="checkbox" name="destacada" checked={formData.destacada} onChange={handleChange}
+                  className="w-4 h-4 text-braidot-primary-bordo focus:ring-braidot-primary-bordo border-braidot-neutral-300 rounded" />
                 <span className="text-sm font-medium text-braidot-negro">Destacada</span>
               </label>
             </div>
@@ -558,19 +441,12 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
 
           {/* Botones */}
           <div className="flex gap-3 pt-4 border-t border-braidot-neutral-200">
-            <button
-              type="submit"
-              disabled={loading || uploadingImages}
-              className="flex-1 bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white font-semibold py-2.5 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <button type="submit" disabled={loading || uploadingImages}
+              className="flex-1 bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white font-semibold py-2.5 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {loading ? 'Guardando...' : uploadingImages ? 'Subiendo imágenes...' : (propiedad ? 'Actualizar' : 'Crear Propiedad')}
             </button>
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading || uploadingImages}
-              className="px-6 py-2.5 border border-braidot-neutral-300 text-braidot-negro font-semibold rounded-md hover:bg-braidot-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <button type="button" onClick={onClose} disabled={loading || uploadingImages}
+              className="px-6 py-2.5 border border-braidot-neutral-300 text-braidot-negro font-semibold rounded-md hover:bg-braidot-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               Cancelar
             </button>
           </div>
