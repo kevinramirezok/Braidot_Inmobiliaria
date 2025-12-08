@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PropertyCard from '../components/PropertyCard';
 import PropertyModal from '../components/PropertyModal';
 import PropertyFilter from '../components/PropertyFilter';
+import CompareBar from '../components/CompareBar';
 import { obtenerPropiedades } from '../services/propertyService';
 
 const PropiedadesPorCategoria = () => {
@@ -122,10 +123,9 @@ const PropiedadesPorCategoria = () => {
           {currentProperties.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {currentProperties.map(property => (
-                  <div className="bg-braidot-neutral-50/80 rounded-xl shadow-lg p-2 transition-all duration-200 hover:shadow-xl">
+                {currentProperties.map((property) => (
+                  <div key={property.id} className="bg-braidot-neutral-50/80 rounded-xl shadow-lg p-2 transition-all duration-200 hover:shadow-xl">
                     <PropertyCard
-                      key={property.id}
                       property={property}
                       onViewDetail={setModalProperty}
                     />
@@ -214,6 +214,7 @@ const PropiedadesPorCategoria = () => {
 
         {/* Modal de detalles */}
         <PropertyModal property={modalProperty} onClose={() => setModalProperty(null)} />
+        <CompareBar />
       </div>
     );
 };

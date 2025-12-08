@@ -4,12 +4,13 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import PropiedadesPorCategoria from './pages/PropiedadesPorCategoria';
 import WhatsappFloat from './components/WhatsappFloat';
-
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import PropiedadesAdmin from './pages/admin/PropiedadesAdmin';
 import ReservasAdmin from './pages/admin/ReservasAdmin';
+import { CompareProvider } from './contexts/CompareContext';
+import Comparar from './pages/Comparar';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -43,54 +44,53 @@ const AdminButton = () => (
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          {/* Página principal */}
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <Home />
-              <Footer />
-              <WhatsappFloat />
-              <AdminButton />
-            </>
-          } />
-          
-          {/* Páginas de propiedades por categoría */}
-          <Route path="/propiedades/:categoria" element={
-            <>
-              <Navbar />
-              <PropiedadesPorCategoria />
-              <Footer />
-              <WhatsappFloat />
-              <AdminButton />
-            </>
-          } />
-          
-          {/* Rutas de administración */}
-          <Route path="/admin/login" element={<Login />} />
-          
-          <Route path="/admin/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/propiedades" element={
-            <ProtectedRoute>
-              <PropiedadesAdmin />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/admin/reservas" element={
-            <ProtectedRoute>
-              <ReservasAdmin />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <CompareProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            {/* Página principal */}
+            <Route path="/" element={
+              <>
+                <Navbar />
+                <Home />
+                <Footer />
+                <WhatsappFloat />
+                <AdminButton />
+              </>
+            } />
+            {/* Páginas de propiedades por categoría */}
+            <Route path="/propiedades/:categoria" element={
+              <>
+                <Navbar />
+                <PropiedadesPorCategoria />
+                <Footer />
+                <WhatsappFloat />
+                <AdminButton />
+              </>
+            } />
+            {/* Nueva ruta de comparación */}
+            <Route path="/comparar" element={<Comparar />} />
+            {/* Rutas de administración */}
+            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/propiedades" element={
+              <ProtectedRoute>
+                <PropiedadesAdmin />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/reservas" element={
+              <ProtectedRoute>
+                <ReservasAdmin />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </CompareProvider>
   );
 }
 

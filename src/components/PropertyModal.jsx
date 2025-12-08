@@ -21,8 +21,41 @@ const PropertyModal = ({ property, onClose }) => {
     if (property.operation === 'Temporaria') {
       setMostrarModalReserva(true);
     } else {
-      window.open(`https://wa.me/5493482XXXXXX?text=Consulta por: ${property.title}`, '_blank');
+      const mensaje = generarMensajeConsulta(property);
+      window.open(`https://wa.me/5493482305750?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
+  };
+
+  const generarMensajeConsulta = (prop) => {
+    let mensaje = `*Consulta por:* ${prop.title}\n\n`;
+    
+    if (prop.tipo) mensaje += `*Tipo:* ${prop.tipo}\n`;
+    if (prop.operation) mensaje += `*Operación:* ${prop.operation}\n`;
+    if (prop.price) mensaje += `*Precio:* $${prop.price?.toLocaleString('es-AR')}\n`;
+    
+    // Ubicación detallada
+    if (prop.localidad || prop.provincia) {
+      mensaje += `*Ubicación:* ${prop.localidad || ''}${prop.provincia ? ', ' + prop.provincia : ''}\n`;
+    } else if (prop.location) {
+      mensaje += `*Ubicación:* ${prop.location}\n`;
+    }
+    
+    if (prop.barrio) mensaje += `*Barrio:* ${prop.barrio}\n`;
+    if (prop.direccion) mensaje += `*Dirección:* ${prop.direccion}\n`;
+    
+    // Características
+    const caracteristicas = [];
+    if (prop.ambientes) caracteristicas.push(`${prop.ambientes} ambientes`);
+    if (prop.banos) caracteristicas.push(`${prop.banos} baños`);
+    if (prop.cocheras) caracteristicas.push(`${prop.cocheras} cocheras`);
+    if (prop.metros_cuadrados) caracteristicas.push(`${prop.metros_cuadrados}m²`);
+    
+    if (caracteristicas.length > 0) {
+      mensaje += `*Características:* ${caracteristicas.join(' • ')}\n`;
+    }
+    
+    mensaje += `\nMe gustaría obtener más información sobre esta propiedad.`;
+    return mensaje;
   };
 
   const siguienteImagen = () => {
@@ -302,7 +335,10 @@ const PropertyModal = ({ property, onClose }) => {
           <div className="border-t border-braidot-neutral-200 p-4 bg-white flex-shrink-0">
             <div className="flex gap-3">
               <button 
-                onClick={() => window.open(`https://wa.me/5493482XXXXXX?text=Consulta por: ${property.title}`, '_blank')}
+                onClick={() => {
+                  const mensaje = generarMensajeConsulta(property);
+                  window.open(`https://wa.me/5493482305750?text=${encodeURIComponent(mensaje)}`, '_blank');
+                }}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3.5 rounded-xl font-semibold transition-colors duration-300 flex items-center justify-center gap-2 shadow-md"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

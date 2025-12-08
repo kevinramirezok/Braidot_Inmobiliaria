@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 const WhatsAppFloat = () => {
   const [showTooltip, setShowTooltip] = useState(true);
-  const phoneNumber = "5493482XXXXXX"; // Reemplazá con tu número real
+  const phoneNumber = "5493482305750"; // Número de WhatsApp de Braidot Inmobiliaria
 
   const handleClick = () => {
     const message = "Hola! Estoy interesado en una propiedad de Braidot Inmobiliaria";

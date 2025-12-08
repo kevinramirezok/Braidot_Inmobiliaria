@@ -75,19 +75,37 @@ const CalendarioReservas = ({ reservasConfirmadas, onSelectRange, fechaInicio, f
   };
 
   // Manejar click en día
+  // Manejar click en día del calendario
   const handleClickDia = (fecha) => {
+    // No permitir selección de fechas pasadas o ya reservadas
     if (esPasado(fecha) || estaReservada(fecha)) return;
     
-    if (!fechaInicio || (fechaInicio && fechaFin)) {
-      // Primera selección o reiniciar
-      onSelectRange(fecha, null);
-    } else if (fecha < fechaInicio) {
-      // Si selecciona una fecha anterior, reinicia
-      onSelectRange(fecha, null);
-    } else {
-      // Segunda selección
-      onSelectRange(fechaInicio, fecha);
+    // Caso 1: Primera selección (no hay fecha de inicio)
+    if (!fechaInicio) {
+      onSelectRange(fecha, fecha); // Seleccionar 1 día
+      return;
     }
+    
+    // Caso 2: Ya hay 1 día seleccionado (inicio = fin)
+    if (fechaInicio && fechaFin && fechaInicio.getTime() === fechaFin.getTime()) {
+      // Si hace click en el mismo día que ya está seleccionado
+      if (fecha.getTime() === fechaInicio.getTime()) {
+        onSelectRange(fecha, fecha); // Mantener 1 día
+      } 
+      // Si hace click en una fecha anterior
+      else if (fecha < fechaInicio) {
+        onSelectRange(fecha, fecha); // Reiniciar desde esa fecha
+      } 
+      // Si hace click en una fecha posterior
+      else {
+        onSelectRange(fechaInicio, fecha); // Extender el rango
+      }
+      return;
+    }
+    
+    // Caso 3: Ya hay un rango de múltiples días seleccionado
+    // Reiniciar la selección con el nuevo día
+    onSelectRange(fecha, fecha);
   };
 
   // Cambiar mes

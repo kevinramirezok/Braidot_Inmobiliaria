@@ -231,11 +231,11 @@ const Dashboard = () => {
         </div>
 
         <h2 className="text-xl font-bold text-white mb-4">⚡ Acciones Rápidas</h2>
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="rounded-xl shadow-xl p-8 flex justify-center items-center w-full" style={{background: 'transparent'}}>
+          <div className="flex flex-col md:flex-row justify-center items-center gap-8 w-full">
             <button
               onClick={() => navigate('/admin/propiedades')}
-              className="group bg-gradient-to-br from-braidot-primary-bordo to-braidot-primary-bordo-light hover:from-braidot-primary-bordo-light hover:to-braidot-primary-bordo text-white p-6 rounded-xl transition-all duration-300 text-left shadow-lg hover:shadow-2xl transform hover:scale-105"
+              className="group flex-1 min-w-[220px] max-w-md bg-gradient-to-br from-braidot-primary-bordo to-braidot-primary-bordo-light hover:from-braidot-primary-bordo-light hover:to-braidot-primary-bordo text-white p-8 rounded-2xl transition-all duration-300 text-left shadow-xl hover:shadow-2xl transform hover:scale-105 flex flex-col justify-center items-start"
             >
               <div className="flex items-center gap-3 mb-2">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +248,7 @@ const Dashboard = () => {
 
             <button 
               onClick={() => navigate('/admin/reservas')}
-              className="group bg-gradient-to-br from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white p-6 rounded-xl transition-all duration-300 text-left shadow-lg hover:shadow-2xl transform hover:scale-105 relative"
+              className="group flex-1 min-w-[220px] max-w-md bg-gradient-to-br from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white p-8 rounded-2xl transition-all duration-300 text-left shadow-xl hover:shadow-2xl transform hover:scale-105 flex flex-col justify-center items-start relative"
             >
               {stats.reservasPendientes > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
@@ -268,15 +268,6 @@ const Dashboard = () => {
               </p>
             </button>
 
-            <button className="group bg-gradient-to-br from-braidot-neutral-700 to-braidot-neutral-500 hover:from-braidot-neutral-500 hover:to-braidot-neutral-700 text-white p-6 rounded-xl transition-all duration-300 text-left shadow-lg hover:shadow-2xl transform hover:scale-105">
-              <div className="flex items-center gap-3 mb-2">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <h3 className="font-bold text-xl">Consultas</h3>
-              </div>
-              <p className="text-sm text-white/90">{stats.consultas} consultas pendientes</p>
-            </button>
           </div>
         </div>
       </main>

@@ -47,6 +47,7 @@ const ModalReserva = ({ property, onClose }) => {
   };
 
   const handleSelectRange = (inicio, fin) => {
+    // Actualizar rango de fechas seleccionado desde el calendario
     setFechaInicio(inicio);
     setFechaFin(fin);
   };
@@ -58,16 +59,26 @@ const ModalReserva = ({ property, onClose }) => {
     });
   };
 
-  const calcularNoches = () => {
+  // Calcular cantidad de días o noches según el tipo de propiedad
+  const calcularCantidad = () => {
     if (!fechaInicio || !fechaFin) return 0;
     const diff = fechaFin - fechaInicio;
-    const noches = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    // Si es el mismo día, cuenta como 1 día de alquiler
-    return noches === 0 ? 1 : noches;
+    const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    // Si es QUINTA: se cobra por DÍA (incluye día de salida)
+    if (property.tipo === "Quinta") {
+      return dias === 0 ? 1 : dias + 1;
+    }
+    // Si es ESTADÍA (Cabaña, Casa, Depto, etc): se cobra por NOCHE
+    return dias === 0 ? 1 : dias;
+  };
+
+  // Obtener el texto correcto según el tipo
+  const getTipoUnidad = () => {
+    return property.tipo === "Quinta" ? "Días" : "Noches";
   };
 
   const calcularTotal = () => {
-    return calcularNoches() * property.price;
+    return calcularCantidad() * property.price;
   };
 
   const handleContinuar = () => {
@@ -94,10 +105,10 @@ const ModalReserva = ({ property, onClose }) => {
           propiedad_id: property.id,
           nombre_cliente: formData.nombre,
           email: formData.email,
-          telefono_cliente: formData.telefono,
+          telefono: formData.telefono,
           fecha_inicio: fechaInicio.toISOString().split('T')[0],
           fecha_fin: fechaFin.toISOString().split('T')[0],
-          cantidad_noches: calcularNoches(),
+          cantidad_noches: calcularCantidad(), // Ahora guarda días o noches según el tipo
           cantidad_personas: parseInt(formData.personas),
           precio_total: calcularTotal(),
           estado: 'pendiente',
@@ -112,7 +123,7 @@ const ModalReserva = ({ property, onClose }) => {
 
 📅 Check-in: ${fechaInicio.toLocaleDateString('es-AR')}
 📅 Check-out: ${(fechaFin || fechaInicio).toLocaleDateString('es-AR')}
-📆 Días: ${calcularNoches()}
+${property.tipo === "Quinta" ? "📆" : "🌙"} ${getTipoUnidad()}: ${calcularCantidad()}
 👥 Personas: ${formData.personas}
 💰 Total: $${calcularTotal().toLocaleString('es-AR')}
 
@@ -121,7 +132,7 @@ const ModalReserva = ({ property, onClose }) => {
 📱 Teléfono: ${formData.telefono}
 ${formData.mensaje ? `\n📝 Mensaje: ${formData.mensaje}` : ''}`;
 
-      const whatsappUrl = `https://wa.me/5493482XXXXXX?text=${encodeURIComponent(mensaje)}`;
+      const whatsappUrl = `https://wa.me/5493482305750?text=${encodeURIComponent(mensaje)}`;
       window.open(whatsappUrl, '_blank');
 
       alert('¡Reserva enviada! Te contactaremos pronto para confirmar.');
@@ -213,11 +224,11 @@ ${formData.mensaje ? `\n📝 Mensaje: ${formData.mensaje}` : ''}`;
                         </span>
                       </div>
                       <div className="flex justify-between text-sm pt-3 border-t border-braidot-neutral-200">
-                        <span className="text-braidot-neutral-600">Días:</span>
-                        <span className="font-semibold text-braidot-negro">{calcularNoches()}</span>
+                        <span className="text-braidot-neutral-600">{getTipoUnidad()}:</span>
+                        <span className="font-semibold text-braidot-negro">{calcularCantidad()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-braidot-neutral-600">Precio por día:</span>
+                        <span className="text-braidot-neutral-600">{`Precio por ${getTipoUnidad().toLowerCase().slice(0, -1)}:`}</span>
                         <span className="font-semibold text-braidot-negro">
                           ${property.price.toLocaleString('es-AR')}
                         </span>
@@ -353,8 +364,8 @@ ${formData.mensaje ? `\n📝 Mensaje: ${formData.mensaje}` : ''}`;
                         <span className="font-semibold">{(fechaFin || fechaInicio).toLocaleDateString('es-AR')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-braidot-neutral-600">Días:</span>
-                        <span className="font-semibold">{calcularNoches()}</span>
+                        <span className="text-braidot-neutral-600">{getTipoUnidad()}:</span>
+                        <span className="font-semibold">{calcularCantidad()}</span>
                       </div>
                       <div className="flex justify-between pt-3 border-t border-braidot-neutral-200">
                         <span className="text-braidot-negro font-semibold">Total:</span>
