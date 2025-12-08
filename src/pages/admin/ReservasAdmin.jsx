@@ -128,7 +128,7 @@ const ReservasAdmin = () => {
     <div
       className="min-h-screen w-full relative"
       style={{
-        backgroundImage: "url('/src/assets/images/FONDO1.jpg')",
+        backgroundImage: "url('/FONDO1.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
