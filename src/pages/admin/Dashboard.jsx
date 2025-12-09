@@ -13,8 +13,7 @@ const Dashboard = () => {
     temporarias: 0,
     consultas: 0,
     reservasPendientes: 0,
-    reservasConfirmadas: 0,
-    ingresosMes: 0
+    reservasConfirmadas: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -83,8 +82,7 @@ const Dashboard = () => {
         temporarias, 
         consultas,
         reservasPendientes,
-        reservasConfirmadas,
-        ingresosMes
+        reservasConfirmadas
       });
     } catch (error) {
       console.error('Error cargando estadísticas:', error);
@@ -212,22 +210,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-6 border-l-4 border-braidot-primary-bordo transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-braidot-gris2 mb-1 font-medium">Ingresos Mes</p>
-                <p className="text-3xl font-bold text-braidot-primary-bordo">
-                  ${(stats.ingresosMes / 1000).toFixed(0)}k
-                </p>
-                <p className="text-xs text-braidot-neutral-600 mt-1">
-                  ${stats.ingresosMes.toLocaleString('es-AR')}
-                </p>
-              </div>
-              <svg className="w-14 h-14 text-braidot-primary-bordo/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
         </div>
 
         <h2 className="text-xl font-bold text-white mb-4">⚡ Acciones Rápidas</h2>
@@ -274,5 +256,4 @@ const Dashboard = () => {
     </div>
   );
 };
-
 export default Dashboard;

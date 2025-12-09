@@ -69,7 +69,7 @@ const FormularioContacto = () => {
   };
 
   return (
-    <section className="w-full bg-gradient-to-br from-braidot-neutral-100 to-braidot-neutral-200 py-16">
+    <section className="w-full bg-white/10 backdrop-blur-md py-16">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold text-braidot-primary-bordo mb-4">

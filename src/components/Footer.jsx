@@ -2,7 +2,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="nosotros" className="bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light text-white mt-16">
+    <footer id="nosotros" className="bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light text-white mt-4 md:mt-8">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Columna 1: Branding */}

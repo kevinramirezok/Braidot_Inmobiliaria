@@ -50,7 +50,7 @@ const PropertyCard = ({ property, onViewDetail }) => {
       {/* Contenido con mejor espaciado */}
       <div className="p-6 relative z-10">
         {/* Título con altura fija */}
-        <h2 className="text-xl font-bold mb-3 text-braidot-primary-bordo line-clamp-2 h-14 group-hover:text-braidot-primary-bordo-light transition-colors">
+        <h2 className="text-lg md:text-xl font-bold mb-3 text-braidot-primary-bordo line-clamp-2 h-14 group-hover:text-braidot-primary-bordo-light transition-colors">
           {property.title}
         </h2>
 

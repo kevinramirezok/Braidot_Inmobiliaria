@@ -11,11 +11,11 @@ export default function ModernTabs({ onChange, activeTab }) {
     <div className="w-full flex justify-center mt-8 mb-6">
       {/* ✅ Eliminé bg-white - ahora es transparente */}
       <div className="flex gap-6 px-4 py-2">
-        {categories.map((cat) => (
+            {categories.map((cat, index) => (
           <button
             key={cat.key}
             onClick={() => onChange(cat.key)}
-            className={`relative px-6 py-2 font-bold text-lg transition-all duration-300 focus:outline-none
+                  className={`relative px-2 md:px-6 py-2 font-bold text-xs md:text-lg transition-all duration-300 focus:outline-none
               ${activeTab === cat.key
                 ? "text-braidot-blanco1 bg-braidot-primary-bordo shadow-xl scale-105"
                 : "text-braidot-primary-bordo bg-white hover:bg-braidot-blanco1 hover:scale-105"}

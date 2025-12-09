@@ -9,6 +9,8 @@ import ModernTabs from '../components/ModernTabs';
 import WhyChooseUs from '../components/WhyChooseUs';
 import CompareBar from '../components/CompareBar';
 import fondoImage from '../assets/images/FONDO1.jpg';
+import FormularioContacto from '../components/FormularioContacto';
+import Footer from '../components/Footer';
 
 
 const Home = () => {
@@ -69,11 +71,11 @@ const Home = () => {
   }
 
   return (
-    <section className="relative flex flex-col items-center min-h-[60vh]">
+    <section className="relative flex flex-col items-center">
         {/* Fondo de imagen con overlay */}
-        <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 z-0 h-screen">
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-fixed"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${fondoImage})` }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10" />
@@ -81,9 +83,9 @@ const Home = () => {
 
         {/* Contenido */}
         <div className="relative z-10 w-full">
-          <div className="bg-white/80 rounded-xl shadow-lg px-10 py-6 my-8 max-w-3xl mx-auto text-center backdrop-blur-md">
-            <h1 className="text-4xl font-extrabold mb-2 text-braidot-primary-bordo drop-shadow-lg">Bienvenido a Braidot Inmobiliaria</h1>
-            <p className="text-braidot-negro text-lg mb-2">Encuentra tu próxima propiedad con nosotros.</p>
+          <div className="bg-white/80 rounded-xl shadow-lg px-4 md:px-10 py-4 md:py-6 my-4 md:my-8 max-w-3xl mx-auto text-center backdrop-blur-md">
+            <h1 className="text-2xl md:text-4xl font-extrabold mb-2 text-braidot-primary-bordo drop-shadow-lg">Bienvenido a Braidot Inmobiliaria</h1>
+            <p className="text-braidot-negro text-base md:text-lg mb-2">Encuentra tu próxima propiedad con nosotros.</p>
           </div>
         </div>
 
@@ -98,7 +100,7 @@ const Home = () => {
           {tabsMap[activeTab].total > 3 && (
             <button
               onClick={() => navigate(tabsMap[activeTab].route)}
-              className="bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white px-4 md:px-6 py-2.5 text-sm md:text-base rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
             >
               Ver todas ({tabsMap[activeTab].total})
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +147,11 @@ const Home = () => {
         )}
         <PropertyModal property={modalProperty} onClose={() => setModalProperty(null)} />
       </div>
-      <WhyChooseUs />
+      <div className="relative z-10 w-full">
+        <FormularioContacto />
+        <WhyChooseUs />
+        <Footer />
+      </div>
       <CompareBar />
     </section>
   );

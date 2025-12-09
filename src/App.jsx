@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import Home from './pages/Home';
 import PropiedadesPorCategoria from './pages/PropiedadesPorCategoria';
 import WhatsappFloat from './components/WhatsappFloat';
@@ -53,7 +52,6 @@ function App() {
               <>
                 <Navbar />
                 <Home />
-                <Footer />
                 <WhatsappFloat />
                 <AdminButton />
               </>
@@ -63,7 +61,6 @@ function App() {
               <>
                 <Navbar />
                 <PropiedadesPorCategoria />
-                <Footer />
                 <WhatsappFloat />
                 <AdminButton />
               </>
