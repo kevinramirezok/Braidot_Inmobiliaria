@@ -76,12 +76,12 @@ const Home = () => {
             className="absolute inset-0 bg-cover bg-center bg-fixed"
             style={{ backgroundImage: `url(${fondoImage})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/70 to-white/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10" />
         </div>
 
         {/* Contenido */}
         <div className="relative z-10 w-full">
-          <div className="bg-white/70 rounded-xl shadow-lg px-10 py-6 my-8 max-w-3xl mx-auto text-center backdrop-blur-md">
+          <div className="bg-white/80 rounded-xl shadow-lg px-10 py-6 my-8 max-w-3xl mx-auto text-center backdrop-blur-md">
             <h1 className="text-4xl font-extrabold mb-2 text-braidot-primary-bordo drop-shadow-lg">Bienvenido a Braidot Inmobiliaria</h1>
             <p className="text-braidot-negro text-lg mb-2">Encuentra tu próxima propiedad con nosotros.</p>
           </div>
