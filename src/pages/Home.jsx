@@ -8,6 +8,7 @@ import PropertyCard from '../components/PropertyCard';
 import ModernTabs from '../components/ModernTabs';
 import WhyChooseUs from '../components/WhyChooseUs';
 import CompareBar from '../components/CompareBar';
+import fondoImage from '../assets/images/FONDO1.jpg';
 
 
 const Home = () => {
@@ -68,20 +69,28 @@ const Home = () => {
   }
 
   return (
-    <section className="flex flex-col items-center min-h-[60vh]">
-        <div className="bg-white/70 rounded-xl shadow-lg px-10 py-6 my-8 max-w-3xl mx-auto text-center backdrop-blur-md">
-          <h1 className="text-4xl font-extrabold mb-2 text-braidot-primary-bordo drop-shadow-lg">Bienvenido a Braidot Inmobiliaria</h1>
-          <p className="text-braidot-negro text-lg mb-2">Encuentra tu próxima propiedad con nosotros.</p>
+    <section className="relative flex flex-col items-center min-h-[60vh]">
+        {/* Fondo de imagen con overlay */}
+        <div className="fixed inset-0 z-0">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-fixed"
+            style={{ backgroundImage: `url(${fondoImage})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/70 to-white/90" />
         </div>
-        <div className="relative w-full mb-12">
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'
-              }} />
-            </div>
-            </div>
-        <ModernTabs activeTab={activeTab} onChange={setActiveTab} />
-      <div className="w-full max-w-5xl">
+
+        {/* Contenido */}
+        <div className="relative z-10 w-full">
+          <div className="bg-white/70 rounded-xl shadow-lg px-10 py-6 my-8 max-w-3xl mx-auto text-center backdrop-blur-md">
+            <h1 className="text-4xl font-extrabold mb-2 text-braidot-primary-bordo drop-shadow-lg">Bienvenido a Braidot Inmobiliaria</h1>
+            <p className="text-braidot-negro text-lg mb-2">Encuentra tu próxima propiedad con nosotros.</p>
+          </div>
+        </div>
+
+        <div className="relative z-10 w-full">
+          <ModernTabs activeTab={activeTab} onChange={setActiveTab} />
+        </div>
+      <div className="relative z-10 w-full max-w-5xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-braidot-primary-bordo bg-white/60 rounded-lg px-4 py-2 inline-block backdrop-blur-md shadow">
             {tabsMap[activeTab].label}
