@@ -4,7 +4,7 @@
 
 /* Fondo principal CON TU IMAGEN */
 body {
-  background-image: url('/FONDO1.jpg');
+  background-image: url('./src/assets/images/FONDO1.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
