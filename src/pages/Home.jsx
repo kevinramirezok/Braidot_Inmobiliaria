@@ -71,9 +71,9 @@ const Home = () => {
   }
 
   return (
-    <section className="relative flex flex-col items-center">
+    <section className="relative flex flex-col items-center min-h-screen">
         {/* Fondo de imagen con overlay */}
-        <div className="absolute inset-0 z-0 h-screen">
+        <div className="absolute inset-0 z-0">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${fondoImage})` }}
