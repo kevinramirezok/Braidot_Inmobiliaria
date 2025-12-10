@@ -2,7 +2,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="nosotros" className="bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light text-white mt-4 md:mt-8">
+    <footer id="nosotros" className="bg-white/60 backdrop-blur-md text-braidot-primary-bordo">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Columna 1: Branding */}
@@ -10,8 +10,8 @@ const Footer = () => {
             <h3 className="text-2xl font-bold mb-4">
               Braidot Inmobiliaria
             </h3>
-            <p className="text-white/80 text-sm mb-4">
-              Tu socio de confianza en bienes raíces desde 2003
+            <p className="text-braidot-primary-bordo text-sm mb-4">
+              Tu socio de confianza en bienes raíces
             </p>
             {/* Redes sociales */}
             <div className="flex gap-3">
@@ -40,8 +40,8 @@ const Footer = () => {
 
           {/* Columna 3: Contacto */}
           <div>
-            <h4 className="text-lg font-bold mb-4">Contacto</h4>
-            <ul className="space-y-3 text-sm text-white/80">
+            <h4 className="text-lg font-bold mb-4 text-braidot-primary-bordo">Contacto</h4>
+            <ul className="space-y-3 text-sm text-braidot-primary-bordo">
               <li className="flex items-start gap-2">
                 <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -70,8 +70,8 @@ const Footer = () => {
 
           {/* Columna 4: Horarios */}
           <div>
-            <h4 className="text-lg font-bold mb-4">Horarios de Atención</h4>
-            <ul className="space-y-2 text-sm text-white/80">
+            <h4 className="text-lg font-bold mb-4 text-braidot-primary-bordo">Horarios de Atención</h4>
+            <ul className="space-y-2 text-sm text-braidot-primary-bordo">
               <li>
                 <span className="font-semibold text-white">Lunes a viernes</span>
                 <br/>8:30 a 12 hs . 16:30 a 20 hs
@@ -86,7 +86,7 @@ const Footer = () => {
 
         {/* Línea divisoria */}
         <div className="border-t border-white/20 pt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-white/70">
+          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-braidot-primary-bordo/80">
             <p>
               © {currentYear} Braidot Inmobiliaria. Todos los derechos reservados.
             </p>
