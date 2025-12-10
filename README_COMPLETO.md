@@ -757,12 +757,23 @@ git push
 
 ---
 
+## 🔐 Usuario Administrador
+
+El acceso al panel administrativo está protegido por Supabase Auth. El usuario real de la inmobiliaria es:
+
+- **Email:** inmobiliariabraidot@hotmail.com
+- **Contraseña:** Calle38n1375
+
+Puedes crear o modificar usuarios desde el dashboard de Supabase → Authentication → Users.
+
+---
+
 ## 📞 Contacto
 
 ### 🏢 Braidot Inmobiliaria
 
 📱 **WhatsApp:** [+54 9 3482 30-5750](https://wa.me/5493482305750)  
-📧 **Email:** contacto@braidotinmobiliaria.com  
+📧 **Email:** inmobiliariabraidot@hotmail.com  
 🌐 **Web:** [braidot-inmobiliaria.vercel.app](https://braidot-inmobiliaria.vercel.app)  
 📍 **Ubicación:** Argentina
 
