@@ -84,11 +84,11 @@ const Home = () => {
 
       {/* Contenido - Hero mejorado */}
       <div className="relative w-full">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 my-4 sm:my-6 md:my-8 max-w-3xl mx-auto text-center border border-[#5B0F0F]/20">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 text-[#5B0F0F] leading-tight">
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 my-4 sm:my-6 md:my-8 max-w-3xl mx-auto text-center border border-white/20">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 text-braidot-primary-bordo leading-tight drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)]">
               Bienvenido a Braidot Inmobiliaria
             </h1>
-            <p className="text-[#0b0b0b] text-base md:text-lg lg:text-xl font-medium">
+            <p className="text-braidot-negro text-base md:text-lg lg:text-xl font-medium drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
               Encuentra tu próxima propiedad con nosotros.
             </p>
           </div>
