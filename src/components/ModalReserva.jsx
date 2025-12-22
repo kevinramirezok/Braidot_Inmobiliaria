@@ -149,7 +149,7 @@ ${formData.mensaje ? `\n📝 Mensaje: ${formData.mensaje}` : ''}`;
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 px-4 backdrop-blur-sm"
+      className="fixed inset-0 flex items-center justify-center z-[99999] px-4 backdrop-blur-sm"
       style={{ background: 'rgba(91, 15, 15, 0.75)' }}
       onClick={onClose}
     >

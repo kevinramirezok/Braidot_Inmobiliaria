@@ -1,16 +1,15 @@
-import React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CompareBar from '../components/CompareBar';
+import Footer from '../components/Footer';
+import FormularioContacto from '../components/FormularioContacto';
+import ModernTabs from '../components/ModernTabs';
+import PropertyCard from '../components/PropertyCard';
 import PropertyFilter from '../components/PropertyFilter';
 import PropertyModal from '../components/PropertyModal';
-import { obtenerPropiedades } from '../services/propertyService';
-import PropertyCard from '../components/PropertyCard';
-import ModernTabs from '../components/ModernTabs';
 import WhyChooseUs from '../components/WhyChooseUs';
-import CompareBar from '../components/CompareBar';
 import fondoImage from '../assets/images/FONDO1.jpg';
-import FormularioContacto from '../components/FormularioContacto';
-import Footer from '../components/Footer';
+import { obtenerPropiedades } from '../services/propertyService';
 
 
 const Home = () => {
@@ -71,36 +70,43 @@ const Home = () => {
   }
 
   return (
-    <section className="relative flex flex-col items-center min-h-screen">
-        {/* Fondo de imagen con overlay */}
-        <div className="absolute inset-0 z-0">
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${fondoImage})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10" />
-        </div>
+    <section 
+      className="min-h-screen flex flex-col items-center"
+      style={{
+        backgroundImage: `url(${fondoImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Overlay oscuro para contraste premium */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-[#5B0F0F]/30 pointer-events-none" />
 
-        {/* Contenido */}
-        <div className="relative z-10 w-full">
-          <div className="bg-white/80 rounded-xl shadow-lg px-4 md:px-10 py-4 md:py-6 my-4 md:my-8 max-w-3xl mx-auto text-center backdrop-blur-md">
-            <h1 className="text-2xl md:text-4xl font-extrabold mb-2 text-braidot-primary-bordo drop-shadow-lg">Bienvenido a Braidot Inmobiliaria</h1>
-            <p className="text-braidot-negro text-base md:text-lg mb-2">Encuentra tu próxima propiedad con nosotros.</p>
+      {/* Contenido - Hero mejorado */}
+      <div className="relative w-full">
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 my-4 sm:my-6 md:my-8 max-w-3xl mx-auto text-center border border-[#5B0F0F]/20">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 text-[#5B0F0F] leading-tight">
+              Bienvenido a Braidot Inmobiliaria
+            </h1>
+            <p className="text-[#0b0b0b] text-base md:text-lg lg:text-xl font-medium">
+              Encuentra tu próxima propiedad con nosotros.
+            </p>
           </div>
         </div>
 
-        <div className="relative z-10 w-full">
-          <ModernTabs activeTab={activeTab} onChange={setActiveTab} />
-        </div>
-      <div className="relative z-10 w-full max-w-5xl">
+      <div className="relative w-full">
+        <ModernTabs activeTab={activeTab} onChange={setActiveTab} />
+      </div>
+
+      <div className="relative w-full max-w-5xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-braidot-primary-bordo bg-white/60 rounded-lg px-4 py-2 inline-block backdrop-blur-md shadow">
+          <h2 className="text-2xl font-bold text-[#5B0F0F] bg-white/60 rounded-lg px-4 py-2 inline-block backdrop-blur-md shadow">
             {tabsMap[activeTab].label}
           </h2>
           {tabsMap[activeTab].total > 3 && (
             <button
               onClick={() => navigate(tabsMap[activeTab].route)}
-              className="bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white px-4 md:px-6 py-2.5 text-sm md:text-base rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="bg-[#5B0F0F] hover:bg-[#7a1414] text-white px-4 md:px-6 py-2.5 text-sm md:text-base rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
             >
               Ver todas ({tabsMap[activeTab].total})
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,12 +153,17 @@ const Home = () => {
         )}
         <PropertyModal property={modalProperty} onClose={() => setModalProperty(null)} />
       </div>
-      <div className="relative z-10 w-full">
-        <FormularioContacto />
-        <WhyChooseUs />
-        <Footer />
-      </div>
-      <CompareBar />
+
+      {!modalProperty && (
+        <>
+          <div className="relative w-full">
+            <FormularioContacto />
+            <WhyChooseUs />
+            <Footer />
+          </div>
+          <CompareBar />
+        </>
+      )}
     </section>
   );
 };

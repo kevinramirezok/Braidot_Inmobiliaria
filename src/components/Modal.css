@@ -1,0 +1,14 @@
+.modal-overlay {
+  z-index: 1000 !important;
+  background: rgba(0,0,0,0.45);
+}
+
+.modal-contenido {
+  z-index: 1010 !important;
+  /* ...otros estilos... */
+}
+
+/* Datepicker encima del modal */
+.react-datepicker-popper {
+  z-index: 2000 !important;
+}

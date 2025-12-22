@@ -15,7 +15,7 @@ const WhatsAppFloat = () => {
   setTimeout(() => setShowTooltip(false), 5000);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+    <div className="hidden min-[400px]:flex fixed bottom-6 right-6 z-50 items-center gap-3">
       {/* Tooltip animado */}
       {showTooltip && (
         <div className="hidden md:block bg-white rounded-lg shadow-xl px-4 py-3 animate-bounce">

@@ -44,10 +44,10 @@ const WhyChooseUs = () => {
   return (
     <section className="w-full max-w-6xl mx-auto my-16 px-4">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-braidot-primary-bordo mb-4">
+        <h2 className="text-4xl font-bold text-white drop-shadow-[0_2px_8px_rgba(91,15,15,0.8)] mb-4">
           ¿Por qué elegir Braidot Inmobiliaria?
         </h2>
-        <p className="text-lg text-braidot-neutral-700 max-w-2xl mx-auto">
+        <p className="text-lg text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-2xl mx-auto">
           Experiencia, confianza y compromiso con cada cliente
         </p>
       </div>

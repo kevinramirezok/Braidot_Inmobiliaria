@@ -1,0 +1,67 @@
+/* ...existing code... */
+
+/* Responsive para mobile */
+@media (max-width: 480px) {
+  h1, h2, h3, .titulo-grande {
+    font-size: 1.2rem !important;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  .modal-contenido {
+    max-width: 95vw;
+    max-height: 85vh;
+    padding: 1rem;
+    overflow-y: auto;
+    border-radius: 16px;
+  }
+
+  .modal-header, .modal-footer {
+    padding: 0.5rem 1rem;
+  }
+
+  .icono-cerrar, .icono-superior {
+    top: 8px !important;
+    right: 8px !important;
+    width: 28px !important;
+    height: 28px !important;
+    z-index: 20;
+  }
+
+  .card-precio {
+    font-size: 1.5rem !important;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .boton-whatsapp-flotante {
+    bottom: 16px !important;
+    right: 16px !important;
+    width: 52px !important;
+    height: 52px !important;
+    z-index: 1000;
+  }
+
+  .card-info {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+  }
+}
+
+/* Mejorar superposición de iconos */
+.icono-cerrar, .icono-superior {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  z-index: 20;
+}
+
+.boton-consultar, .boton-ver-disponibilidad {
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  margin: 0.2rem;
+  min-width: 120px;
+}
+
+/* ...existing code... */

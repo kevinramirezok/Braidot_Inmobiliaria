@@ -25,17 +25,17 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/admin/login" />;
 };
 
-// Botón admin flotante
+// Botón admin flotante - oculto en móvil ya que está en el navbar
 const AdminButton = () => (
   <a 
     href="/admin/login"
-    className="fixed bottom-4 left-4 bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-light text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40 group"
+    className="hidden md:flex fixed bottom-4 left-4 bg-[#5B0F0F] hover:bg-[#7a1414] text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-30 group"
     title="Acceso Admin"
   >
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
     </svg>
-    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-braidot-negro text-white px-3 py-1 rounded text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#0b0b0b] text-white px-3 py-1 rounded text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
       Acceso Admin
     </span>
   </a>

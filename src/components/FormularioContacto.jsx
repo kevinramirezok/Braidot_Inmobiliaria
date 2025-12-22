@@ -72,10 +72,10 @@ const FormularioContacto = () => {
     <section className="w-full bg-white/10 backdrop-blur-md py-16">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-10">
-          <h2 className="text-4xl font-bold text-braidot-primary-bordo mb-4">
+          <h2 className="text-4xl font-bold text-white drop-shadow-[0_2px_8px_rgba(91,15,15,0.8)] mb-4">
             ¿Tenés alguna consulta?
           </h2>
-          <p className="text-lg text-braidot-neutral-700">
+          <p className="text-lg text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
             Completá el formulario y te contactaremos a la brevedad
           </p>
         </div>

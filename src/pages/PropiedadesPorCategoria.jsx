@@ -84,14 +84,22 @@ const PropiedadesPorCategoria = () => {
 
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-braidot-neutral-200 to-braidot-neutral-300">
+      <div className="min-h-screen relative" style={{
+        backgroundImage: "url('/src/assets/images/FONDO1.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}>
+        {/* Overlay oscuro */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-[#5B0F0F]/30" />
+        
         {/* Header con botón volver */}
-        <div className="bg-braidot-neutral-100/90 backdrop-blur-md shadow-md sticky top-0 z-30">
+        <div className="bg-[#171717]/95 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.5)] sticky top-0 z-30 relative border-b border-[#5B0F0F]/30">
           <div className="max-w-7xl mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <button
                 onClick={() => navigate('/')}
-                className="flex items-center gap-2 text-braidot-primary-bordo hover:text-braidot-primary-bordo-light transition-colors font-semibold"
+                className="flex items-center gap-2 text-[#F3F4F6] hover:text-[#5B0F0F] transition-colors font-semibold"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -99,10 +107,10 @@ const PropiedadesPorCategoria = () => {
                 Volver al inicio
               </button>
               <div className="text-right">
-                <h1 className="text-2xl font-bold text-braidot-negro">
+                <h1 className="text-2xl font-bold text-[#F3F4F6]">
                   {categoryMap[categoria].label}
                 </h1>
-                <p className="text-sm text-braidot-neutral-600">
+                <p className="text-sm text-[#F3F4F6]/80">
                   {filteredProperties.length} {filteredProperties.length === 1 ? 'propiedad encontrada' : 'propiedades encontradas'}
                 </p>
               </div>
