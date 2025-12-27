@@ -1576,6 +1576,16 @@ Desarrollado bajo contrato con **Neocode Innovation**.
 
 ## 📝 Changelog
 
+### v1.1.0 - 27/12/2025 (Correcciones Críticas) ✅
+🔧 **Fix z-index toasts**: Agregado `containerClassName="z-[10000]"` y `containerStyle` para garantizar visibilidad sobre Navbar  
+🔧 **Fix lógica temporaria**: Cambio de `property.tipo === "Quinta"` a `property.operation === "Temporaria"` para cobro por días  
+🔧 **Fix off-by-one fechas**: Implementada función `formatDateLocal()` para evitar conversión UTC (Argentina UTC-3)  
+🔧 **Fix bloqueo manual**: Corrección de columnas BD (`email`/`telefono` en lugar de `email_cliente`/`telefono_cliente`)  
+🔧 **Fix responsive mobile**: Implementación mobile-first en modal de bloqueo con bottom sheet desde 320px  
+🔧 **Fix header admin**: Agregado `flex-wrap` para evitar colisión de botones en pantallas pequeñas  
+🔧 **Fix calendario**: Normalización de fechas con `'T00:00:00'` para comparación consistente  
+🔧 **Política Cero Errores**: Validación exhaustiva de schema BD y sincronización perfecta  
+
 ### v1.0.0 - 27/12/2024 (PRODUCCIÓN READY) ✅
 ✅ **Lanzamiento oficial en producción**  
 ✅ Sistema completo de propiedades (CRUD + filtros)  
@@ -1601,8 +1611,8 @@ Desarrollado bajo contrato con **Neocode Innovation**.
 
 [![GitHub](https://img.shields.io/badge/GitHub-kevinramirezok%2FBraidot__Inmobiliaria-181717?style=for-the-badge&logo=github)](https://github.com/kevinramirezok/Braidot_Inmobiliaria)
 
-_Última actualización: 27 de diciembre de 2024_  
-_Versión: 1.0.0 - Producción Ready_  
+_Última actualización: 27 de diciembre de 2025_  
+_Versión: 1.1.0 - Correcciones Críticas_  
 _Desarrollado por: Neocode Innovation 🚀_
 
 </div>
