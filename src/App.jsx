@@ -50,6 +50,11 @@ function App() {
           {/* Configuración global de Toasts */}
           <Toaster 
             position="top-center"
+            containerClassName="z-[10000]"
+            containerStyle={{
+              zIndex: 10000,
+              position: 'fixed'
+            }}
             toastOptions={{
               // Estilos por defecto para todos los toasts
               style: {

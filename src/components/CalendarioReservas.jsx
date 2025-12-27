@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 
+// Función helper para formatear fechas en formato YYYY-MM-DD usando zona horaria LOCAL
+const formatDateLocal = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const CalendarioReservas = ({ reservasConfirmadas, onSelectRange, fechaInicio, fechaFin }) => {
   const [mesActual, setMesActual] = useState(new Date());
   const [hoveredDate, setHoveredDate] = useState(null);
@@ -34,12 +42,18 @@ const CalendarioReservas = ({ reservasConfirmadas, onSelectRange, fechaInicio, f
 
   // Verificar si una fecha está bloqueada (PENDIENTE o CONFIRMADA)
   const estaReservada = (fecha) => {
-    const fechaStr = fecha.toISOString().split('T')[0];
+    // Normalizar fecha a medianoche para comparación consistente
+    const fechaNormalizada = new Date(fecha);
+    fechaNormalizada.setHours(0, 0, 0, 0);
+    
     return reservasConfirmadas.some(reserva => {
-      const inicio = new Date(reserva.fecha_inicio);
-      const fin = new Date(reserva.fecha_fin);
-      // Bloquear si está PENDIENTE o CONFIRMADA (Opción 2: sin conflictos)
-      return fecha >= inicio && fecha <= fin && (reserva.estado === 'pendiente' || reserva.estado === 'confirmada');
+      // Crear objetos Date desde las cadenas ISO de la BD
+      const inicio = new Date(reserva.fecha_inicio + 'T00:00:00');
+      const fin = new Date(reserva.fecha_fin + 'T00:00:00');
+      
+      // Bloquear si está PENDIENTE o CONFIRMADA
+      return fechaNormalizada >= inicio && fechaNormalizada <= fin && 
+             (reserva.estado === 'pendiente' || reserva.estado === 'confirmada');
     });
   };
 
@@ -55,9 +69,9 @@ const CalendarioReservas = ({ reservasConfirmadas, onSelectRange, fechaInicio, f
     if (esPasado(fecha)) return 'text-braidot-neutral-300 cursor-not-allowed';
     if (estaReservada(fecha)) return 'bg-braidot-neutral-300 text-white cursor-not-allowed';
     
-    const fechaStr = fecha.toISOString().split('T')[0];
-    const inicioStr = fechaInicio?.toISOString().split('T')[0];
-    const finStr = fechaFin?.toISOString().split('T')[0];
+    const fechaStr = formatDateLocal(fecha);
+    const inicioStr = fechaInicio ? formatDateLocal(fechaInicio) : null;
+    const finStr = fechaFin ? formatDateLocal(fechaFin) : null;
     
     if (fechaStr === inicioStr || fechaStr === finStr) {
       return 'bg-braidot-primary-bordo text-white font-bold';

@@ -216,10 +216,10 @@ const ReservasAdmin = () => {
       return;
     }
 
-    // Calcular días (lógica de quintas)
-    const inicio = new Date(formBloqueo.fecha_inicio);
-    const fin = new Date(formBloqueo.fecha_fin);
-    const diffTime = Math.abs(fin - inicio);
+    // Calcular días con fórmula de quintas: (Fecha_Fin - Fecha_Inicio) + 1
+    const inicio = new Date(formBloqueo.fecha_inicio + 'T00:00:00');
+    const fin = new Date(formBloqueo.fecha_fin + 'T00:00:00');
+    const diffTime = fin - inicio;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const cantidadDias = diffDays + 1; // Incluye día de entrada y salida
 
@@ -231,11 +231,11 @@ const ReservasAdmin = () => {
         .insert([{
           propiedad_id: formBloqueo.propiedad_id,
           nombre_cliente: 'ADMIN_BLOCK',
-          email_cliente: 'admin@braidot.com',
-          telefono_cliente: '---',
+          email: 'admin@braidot.com',
+          telefono: '---',
           fecha_inicio: formBloqueo.fecha_inicio,
           fecha_fin: formBloqueo.fecha_fin,
-          cantidad_personas: 0,
+          cantidad_personas: 1,
           cantidad_noches: cantidadDias,
           precio_total: 0,
           notas: 'Bloqueo administrativo',
@@ -337,7 +337,7 @@ const ReservasAdmin = () => {
 
       {/* Header */}
       <header className="bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light shadow-xl relative z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate('/admin/dashboard')}
@@ -348,25 +348,26 @@ const ReservasAdmin = () => {
               </svg>
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white">Gestión de Reservas</h1>
-              <p className="text-sm text-braidot-blanco2">
+              <h1 className="text-xl sm:text-2xl font-bold text-white">Gestión de Reservas</h1>
+              <p className="text-xs sm:text-sm text-braidot-blanco2">
                 {reservasFiltradas.length} {reservasFiltradas.length === 1 ? 'reserva' : 'reservas'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => setModalBloqueoAbierto(true)}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-all duration-300 font-semibold shadow-md hover:shadow-lg flex items-center gap-2"
+              className="flex-1 sm:flex-none bg-yellow-500 hover:bg-yellow-600 text-white px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 font-semibold shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              Bloqueo Manual
+              <span className="hidden sm:inline">Bloqueo Manual</span>
+              <span className="sm:hidden">Bloqueo</span>
             </button>
             <button
               onClick={handleLogout}
-              className="bg-white text-braidot-primary-bordo hover:bg-braidot-neutral-100 px-6 py-2 rounded-lg transition-all duration-300 font-semibold shadow-md hover:shadow-lg"
+              className="flex-1 sm:flex-none bg-white text-braidot-primary-bordo hover:bg-braidot-neutral-100 px-4 sm:px-6 py-2 rounded-lg transition-all duration-300 font-semibold shadow-md hover:shadow-lg text-sm"
             >
               Cerrar Sesión
             </button>
@@ -592,36 +593,47 @@ const ReservasAdmin = () => {
         </div>
       </main>
 
-      {/* Modal de Bloqueo Manual */}
+      {/* Modal de Bloqueo Manual - Mobile First Design */}
       {modalBloqueoAbierto && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light p-6 rounded-t-xl">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  Bloqueo Manual
-                </h2>
-                <button
-                  onClick={() => {
-                    setModalBloqueoAbierto(false);
-                    setFormBloqueo({ propiedad_id: '', fecha_inicio: '', fecha_fin: '' });
-                  }}
-                  className="text-white hover:text-braidot-blanco2 transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header Sticky */}
+            <div className="sticky top-0 z-20 bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light">
+              <div className="p-4 sm:p-6">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Bloqueo Manual
+                    </h2>
+                    <p className="text-braidot-blanco2 text-xs sm:text-sm mt-2">
+                      Crea un bloqueo administrativo para reservar fechas sin cliente
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setModalBloqueoAbierto(false);
+                      setFormBloqueo({ propiedad_id: '', fecha_inicio: '', fecha_fin: '' });
+                    }}
+                    className="text-white hover:text-braidot-blanco2 transition-colors p-1 -mt-1"
+                    aria-label="Cerrar modal"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <p className="text-braidot-blanco2 text-sm mt-2">
-                Crea un bloqueo administrativo para reservar fechas sin cliente
-              </p>
+              {/* Indicador visual de drag (solo mobile) */}
+              <div className="sm:hidden flex justify-center pb-2">
+                <div className="w-12 h-1 bg-white/30 rounded-full"></div>
+              </div>
             </div>
 
-            <form onSubmit={crearBloqueoManual} className="p-6 space-y-4">
+            {/* Contenido Scrollable */}
+            <form onSubmit={crearBloqueoManual} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-braidot-negro mb-2">
                   Propiedad <span className="text-red-500">*</span>
@@ -630,7 +642,7 @@ const ReservasAdmin = () => {
                   value={formBloqueo.propiedad_id}
                   onChange={(e) => setFormBloqueo({ ...formBloqueo, propiedad_id: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo"
+                  className="w-full px-4 py-3 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo text-base"
                 >
                   <option value="">Seleccionar propiedad</option>
                   {propiedades.map((prop) => (
@@ -651,7 +663,7 @@ const ReservasAdmin = () => {
                   onChange={(e) => setFormBloqueo({ ...formBloqueo, fecha_inicio: e.target.value })}
                   required
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-2 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo"
+                  className="w-full px-4 py-3 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo text-base"
                 />
               </div>
 
@@ -665,7 +677,7 @@ const ReservasAdmin = () => {
                   onChange={(e) => setFormBloqueo({ ...formBloqueo, fecha_fin: e.target.value })}
                   required
                   min={formBloqueo.fecha_inicio || new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-2 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo"
+                  className="w-full px-4 py-3 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo text-base"
                 />
               </div>
 
@@ -675,20 +687,21 @@ const ReservasAdmin = () => {
                 </p>
               </div>
 
-              <div className="flex gap-3 pt-4">
+              {/* Botones Sticky en Mobile */}
+              <div className="sticky bottom-0 left-0 right-0 bg-white pt-4 pb-2 sm:pb-0 flex gap-3 border-t sm:border-t-0 border-braidot-neutral-200 sm:border-0 -mx-4 sm:mx-0 px-4 sm:px-0">
                 <button
                   type="button"
                   onClick={() => {
                     setModalBloqueoAbierto(false);
                     setFormBloqueo({ propiedad_id: '', fecha_inicio: '', fecha_fin: '' });
                   }}
-                  className="flex-1 bg-braidot-neutral-200 hover:bg-braidot-neutral-300 text-braidot-negro font-semibold py-3 rounded-lg transition-colors"
+                  className="flex-1 bg-braidot-neutral-200 hover:bg-braidot-neutral-300 text-braidot-negro font-semibold py-3 rounded-lg transition-colors text-base"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-dark text-white font-semibold py-3 rounded-lg transition-colors"
+                  className="flex-1 bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-dark text-white font-semibold py-3 rounded-lg transition-colors text-base shadow-lg"
                 >
                   Crear Bloqueo
                 </button>

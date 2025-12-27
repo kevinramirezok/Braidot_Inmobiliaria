@@ -3,6 +3,15 @@ import { supabase } from '../lib/supabase';
 import CalendarioReservas from './CalendarioReservas';
 import toast from 'react-hot-toast';
 
+// Función helper para formatear fechas en formato YYYY-MM-DD usando zona horaria LOCAL
+// Evita el problema de toISOString() que convierte a UTC y causa off-by-one en Argentina (UTC-3)
+const formatDateLocal = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const ModalReserva = ({ property, onClose }) => {
   const [reservasConfirmadas, setReservasConfirmadas] = useState([]);
   const [fechaInicio, setFechaInicio] = useState(null);
@@ -37,8 +46,8 @@ const ModalReserva = ({ property, onClose }) => {
       const { data, error } = await supabase
         .from('reservas')
         .select('fecha_inicio, fecha_fin, estado')
-        .eq('propiedad_id', property.id)
-        .in('estado', ['pendiente', 'confirmada']); // Traer PENDIENTES y CONFIRMADAS
+        .eq('propiedad_id', property.id) // Ensure filtering by property ID
+        .in('estado', ['pendiente', 'confirmada']); // Fetch only pending and confirmed reservations
 
       if (error) throw error;
       setReservasConfirmadas(data || []);
@@ -60,25 +69,25 @@ const ModalReserva = ({ property, onClose }) => {
     });
   };
 
-  // Calcular cantidad de días o noches según el tipo de propiedad
+  // Calcular cantidad de días o noches según el tipo de operación de la propiedad
   const calcularCantidad = () => {
     if (!fechaInicio || !fechaFin) return 0;
     const diff = fechaFin - fechaInicio;
     const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    // Si es QUINTA: se cobra por DÍA (incluye día de entrada Y salida)
+    // Si es TEMPORARIA (operation === "Temporaria"): se cobra por DÍA (incluye día de entrada Y salida)
     // Fórmula: (Fecha_Fin - Fecha_Inicio) + 1
-    // Ejemplo: 30/12 al 31/12 = 2 días
+    // Ejemplo: 29/12 al 30/12 = 2 días (cobra $300.000 si el precio es $150.000/día)
     // Si es un solo día (ej. 27/12), fecha_inicio = fecha_fin = 1 día
-    if (property.tipo === "Quinta") {
+    if (property.operation === "Temporaria") {
       return dias + 1;
     }
-    // Si es ESTADÍA (Cabaña, Casa, Depto, etc): se cobra por NOCHE
+    // Si es ESTADÍA (operation !== "Temporaria"): se cobra por NOCHE
     return dias === 0 ? 1 : dias;
   };
 
-  // Obtener el texto correcto según el tipo
+  // Obtener el texto correcto según el tipo de operación
   const getTipoUnidad = () => {
-    return property.tipo === "Quinta" ? "Días" : "Noches";
+    return property.operation === "Temporaria" ? "Días" : "Noches";
   };
 
   const calcularTotal = () => {
@@ -113,8 +122,8 @@ const ModalReserva = ({ property, onClose }) => {
           nombre_cliente: formData.nombre,
           email: formData.email,
           telefono: formData.telefono,
-          fecha_inicio: fechaInicio.toISOString().split('T')[0],
-          fecha_fin: fechaFin.toISOString().split('T')[0],
+          fecha_inicio: formatDateLocal(fechaInicio),
+          fecha_fin: formatDateLocal(fechaFin),
           cantidad_personas: parseInt(formData.personas),
           precio_total: calcularTotal(),
           cantidad_noches: calcularCantidad(), // Guarda los DÍAS (para quintas)
