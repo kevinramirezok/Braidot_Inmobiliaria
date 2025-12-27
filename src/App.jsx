@@ -10,6 +10,7 @@ import PropiedadesAdmin from './pages/admin/PropiedadesAdmin';
 import ReservasAdmin from './pages/admin/ReservasAdmin';
 import { CompareProvider } from './contexts/CompareContext';
 import Comparar from './pages/Comparar';
+import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -46,6 +47,51 @@ function App() {
     <CompareProvider>
       <BrowserRouter>
         <AuthProvider>
+          {/* Configuración global de Toasts */}
+          <Toaster 
+            position="top-center"
+            toastOptions={{
+              // Estilos por defecto para todos los toasts
+              style: {
+                background: '#ffffff',
+                color: '#0b0b0b',
+                padding: '16px',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: '500',
+                boxShadow: '0 10px 40px rgba(91, 15, 15, 0.2)',
+              },
+              // Estilos para toast de éxito
+              success: {
+                duration: 4000,
+                iconTheme: {
+                  primary: '#5B0F0F',
+                  secondary: '#ffffff',
+                },
+                style: {
+                  border: '2px solid #5B0F0F',
+                },
+              },
+              // Estilos para toast de error
+              error: {
+                duration: 5000,
+                iconTheme: {
+                  primary: '#dc2626',
+                  secondary: '#ffffff',
+                },
+                style: {
+                  border: '2px solid #dc2626',
+                },
+              },
+              // Estilos para toast de loading
+              loading: {
+                iconTheme: {
+                  primary: '#5B0F0F',
+                  secondary: '#ffffff',
+                },
+              },
+            }}
+          />
           <Routes>
             {/* Página principal */}
             <Route path="/" element={

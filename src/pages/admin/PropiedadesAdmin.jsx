@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import FormularioPropiedad from '../../components/admin/FormularioPropiedad';
+import toast from 'react-hot-toast';
 
 const PropiedadesAdmin = () => {
   const { user, signOut } = useAuth();
@@ -37,7 +38,9 @@ const PropiedadesAdmin = () => {
   };
 
   const eliminarPropiedad = async (id) => {
-    if (!confirm('¿Estás seguro de eliminar esta propiedad?')) return;
+    if (!window.confirm('¿Estás seguro de eliminar esta propiedad?')) return;
+
+    const loadingToast = toast.loading('Eliminando propiedad...');
 
     try {
       const { error } = await supabase
@@ -47,11 +50,15 @@ const PropiedadesAdmin = () => {
 
       if (error) throw error;
       
-      alert('Propiedad eliminada exitosamente');
+      toast.success('Propiedad eliminada exitosamente', {
+        id: loadingToast,
+      });
       cargarPropiedades();
     } catch (error) {
       console.error('Error eliminando propiedad:', error);
-      alert('Error al eliminar la propiedad');
+      toast.error('Error al eliminar la propiedad', {
+        id: loadingToast,
+      });
     }
   };
 

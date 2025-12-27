@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 const FormularioContacto = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,6 @@ const FormularioContacto = () => {
     mensaje: ''
   });
   const [loading, setLoading] = useState(false);
-  const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
 
   const handleChange = (e) => {
     setFormData({
@@ -21,7 +21,6 @@ const FormularioContacto = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMensaje({ tipo: '', texto: '' });
 
     try {
       const { error } = await supabase
@@ -38,9 +37,8 @@ const FormularioContacto = () => {
 
       if (error) throw error;
 
-      setMensaje({
-        tipo: 'success',
-        texto: '¡Consulta enviada! Te contactaremos pronto.'
+      toast.success('¡Consulta enviada exitosamente! Te contactaremos pronto.', {
+        duration: 5000,
       });
 
       // Limpiar formulario
@@ -59,10 +57,7 @@ const FormularioContacto = () => {
 
     } catch (error) {
       console.error('Error enviando consulta:', error);
-      setMensaje({
-        tipo: 'error',
-        texto: 'Error al enviar la consulta. Por favor intenta de nuevo.'
-      });
+      toast.error('Error al enviar la consulta. Por favor intentá de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -146,17 +141,6 @@ const FormularioContacto = () => {
                 placeholder="Contanos tu consulta..."
               />
             </div>
-
-            {/* Mensaje de éxito/error */}
-            {mensaje.texto && (
-              <div className={`p-4 rounded-lg ${
-                mensaje.tipo === 'success' 
-                  ? 'bg-green-100 text-green-800 border border-green-300' 
-                  : 'bg-red-100 text-red-800 border border-red-300'
-              }`}>
-                {mensaje.texto}
-              </div>
-            )}
 
             {/* Botón enviar */}
             <button

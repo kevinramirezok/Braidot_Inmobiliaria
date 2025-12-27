@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import CalendarioReservas from './CalendarioReservas';
+import toast from 'react-hot-toast';
 
 const ModalReserva = ({ property, onClose }) => {
   const [reservasConfirmadas, setReservasConfirmadas] = useState([]);
@@ -64,9 +65,12 @@ const ModalReserva = ({ property, onClose }) => {
     if (!fechaInicio || !fechaFin) return 0;
     const diff = fechaFin - fechaInicio;
     const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    // Si es QUINTA: se cobra por DÍA (incluye día de salida)
+    // Si es QUINTA: se cobra por DÍA (incluye día de entrada Y salida)
+    // Fórmula: (Fecha_Fin - Fecha_Inicio) + 1
+    // Ejemplo: 30/12 al 31/12 = 2 días
+    // Si es un solo día (ej. 27/12), fecha_inicio = fecha_fin = 1 día
     if (property.tipo === "Quinta") {
-      return dias === 0 ? 1 : dias + 1;
+      return dias + 1;
     }
     // Si es ESTADÍA (Cabaña, Casa, Depto, etc): se cobra por NOCHE
     return dias === 0 ? 1 : dias;
@@ -83,7 +87,7 @@ const ModalReserva = ({ property, onClose }) => {
 
   const handleContinuar = () => {
     if (!fechaInicio) {
-      alert('Por favor selecciona la fecha de check-in');
+      toast.error('Por favor selecciona la fecha de check-in');
       return;
     }
     // Si no hay fecha fin, usar la misma fecha de inicio (1 día)
@@ -99,6 +103,9 @@ const ModalReserva = ({ property, onClose }) => {
 
     try {
       // Guardar en Supabase
+      // Nota: Los nombres de columnas deben coincidir EXACTAMENTE con la tabla reservas
+      // Columnas reales: propiedad_id, nombre_cliente, email, telefono, fecha_inicio, fecha_fin, 
+      //                  cantidad_personas, precio_total, cantidad_noches, notas, estado
       const { data, error } = await supabase
         .from('reservas')
         .insert([{
@@ -108,11 +115,11 @@ const ModalReserva = ({ property, onClose }) => {
           telefono: formData.telefono,
           fecha_inicio: fechaInicio.toISOString().split('T')[0],
           fecha_fin: fechaFin.toISOString().split('T')[0],
-          cantidad_noches: calcularCantidad(), // Ahora guarda días o noches según el tipo
           cantidad_personas: parseInt(formData.personas),
           precio_total: calcularTotal(),
-          estado: 'pendiente',
-          notas: formData.mensaje
+          cantidad_noches: calcularCantidad(), // Guarda los DÍAS (para quintas)
+          notas: formData.mensaje,
+          estado: 'pendiente'
         }])
         .select();
 
@@ -135,11 +142,13 @@ ${formData.mensaje ? `\n📝 Mensaje: ${formData.mensaje}` : ''}`;
       const whatsappUrl = `https://wa.me/5493482305750?text=${encodeURIComponent(mensaje)}`;
       window.open(whatsappUrl, '_blank');
 
-      alert('¡Reserva enviada! Te contactaremos pronto para confirmar.');
+      toast.success('¡Reserva enviada exitosamente! Te redirigimos a WhatsApp para confirmar.', {
+        duration: 5000,
+      });
       onClose();
     } catch (error) {
       console.error('Error creando reserva:', error);
-      alert('Error al crear la reserva. Por favor intenta de nuevo.');
+      toast.error('Error al crear la reserva. Por favor intentá de nuevo.');
     } finally {
       setLoading(false);
     }

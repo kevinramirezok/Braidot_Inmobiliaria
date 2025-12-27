@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import toast from 'react-hot-toast';
 
 const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -86,7 +87,7 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     const maxSize = 5 * 1024 * 1024;
     const archivosValidos = files.filter(file => {
       if (file.size > maxSize) {
-        alert(`La imagen ${file.name} supera los 5MB`);
+        toast.error(`La imagen ${file.name} supera los 5MB`);
         return false;
       }
       return true;
@@ -115,9 +116,22 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
     const urlsSubidas = [];
 
     try {
-      for (const archivo of archivosImagenes) {
+      // Iterar con índice para mantener el orden
+      for (let i = 0; i < archivosImagenes.length; i++) {
+        const archivo = archivosImagenes[i];
         const fileExt = archivo.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        // Formatear índice con dos dígitos (00, 01, 02, etc.)
+        const indiceFormateado = i.toString().padStart(2, '0');
+        
+        // Nombre original sin extensión
+        const nombreOriginal = archivo.name.substring(0, archivo.name.lastIndexOf('.'));
+        
+        // Nuevo nombre: prefijo numérico + nombre original (sanitizado) + timestamp único
+        const timestamp = Date.now();
+        const randomId = Math.random().toString(36).substring(7);
+        const nombreSanitizado = nombreOriginal.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const fileName = `${indiceFormateado}-${nombreSanitizado}-${timestamp}-${randomId}.${fileExt}`;
         const filePath = `${fileName}`;
 
         const { data, error } = await supabase.storage
@@ -139,7 +153,7 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
       return urlsSubidas;
     } catch (error) {
       console.error('Error subiendo imágenes:', error);
-      alert('Error al subir las imágenes: ' + error.message);
+      toast.error('Error al subir las imágenes: ' + error.message);
       return [];
     } finally {
       setUploadingImages(false);
@@ -156,7 +170,7 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
       const todasLasImagenes = [...urlsTexto, ...urlsArchivos];
 
       if (todasLasImagenes.length === 0) {
-        alert('Debes agregar al menos una imagen');
+        toast.error('Debés agregar al menos una imagen');
         setLoading(false);
         return;
       }
@@ -184,12 +198,12 @@ const FormularioPropiedad = ({ propiedad, onClose, onSuccess }) => {
 
       if (error) throw error;
 
-      alert(propiedad ? 'Propiedad actualizada exitosamente' : 'Propiedad creada exitosamente');
+      toast.success(propiedad ? 'Propiedad actualizada exitosamente' : 'Propiedad creada exitosamente');
       onSuccess();
       onClose();
     } catch (error) {
       console.error('Error guardando propiedad:', error);
-      alert('Error al guardar la propiedad: ' + error.message);
+      toast.error('Error al guardar la propiedad: ' + error.message);
     } finally {
       setLoading(false);
     }

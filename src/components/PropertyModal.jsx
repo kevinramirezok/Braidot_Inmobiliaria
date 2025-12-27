@@ -4,6 +4,7 @@ import ModalReserva from './ModalReserva';
 const PropertyModal = ({ property, onClose }) => {
   const [mostrarModalReserva, setMostrarModalReserva] = useState(false);
   const [imagenActual, setImagenActual] = useState(0);
+  const [lightboxAbierto, setLightboxAbierto] = useState(false);
 
   // Bloquear scroll del body cuando el modal está abierto
   useEffect(() => {
@@ -14,6 +15,23 @@ const PropertyModal = ({ property, onClose }) => {
       document.body.style.overflow = 'unset';
     };
   }, [property]);
+
+  // Manejar tecla ESC para cerrar el lightbox
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && lightboxAbierto) {
+        setLightboxAbierto(false);
+      }
+    };
+    
+    if (lightboxAbierto) {
+      window.addEventListener('keydown', handleEsc);
+    }
+    
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [lightboxAbierto]);
 
   // Función para generar mensaje de WhatsApp
   const generarMensajeConsulta = (prop) => {
@@ -89,15 +107,26 @@ const PropertyModal = ({ property, onClose }) => {
           </button>
 
           {/* Carrusel de imágenes - altura reducida para 320px */}
-          <div className="relative h-44 sm:h-56 md:h-64 lg:h-80 bg-braidot-neutral-900 flex-shrink-0">
+          <div className="relative h-44 sm:h-56 md:h-64 lg:h-80 bg-braidot-neutral-900 flex-shrink-0 group">
             <img 
               src={property.images[imagenActual]} 
               alt={`${property.title} - Imagen ${imagenActual + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover cursor-zoom-in hover:opacity-90 transition-opacity"
+              onClick={() => setLightboxAbierto(true)}
+              title="Click para ver en pantalla completa"
             />
             
+            {/* Ícono de zoom visible al hacer hover */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div className="bg-white/90 rounded-full p-4 shadow-2xl">
+                <svg className="w-8 h-8 text-braidot-primary-bordo" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                </svg>
+              </div>
+            </div>
+            
             {/* Gradiente */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
             
             {/* Badge de operación */}
             <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 bg-braidot-primary-bordo text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold shadow-lg">
@@ -333,6 +362,77 @@ const PropertyModal = ({ property, onClose }) => {
           property={property}
           onClose={() => setMostrarModalReserva(false)}
         />
+      )}
+
+      {/* Lightbox para visualización en pantalla completa */}
+      {lightboxAbierto && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm animate-fadeIn"
+          onClick={() => setLightboxAbierto(false)}
+        >
+          {/* Botón cerrar - Grande y prominente */}
+          <button
+            onClick={() => setLightboxAbierto(false)}
+            className="absolute top-4 right-4 bg-white hover:bg-red-500 text-braidot-primary-bordo hover:text-white rounded-full w-14 h-14 flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 hover:rotate-90 z-[201] group"
+            aria-label="Cerrar vista completa"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* Indicador de pantalla completa */}
+          <div className="absolute top-4 left-4 bg-black/80 text-white px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-md shadow-lg">
+            🔍 Vista completa - {imagenActual + 1}/{property.images.length}
+          </div>
+
+          {/* Navegación entre imágenes */}
+          {property.images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  anteriorImagen();
+                }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-braidot-primary-bordo rounded-full w-14 h-14 flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all hover:scale-110 z-[201]"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  siguienteImagen();
+                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-braidot-primary-bordo rounded-full w-14 h-14 flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all hover:scale-110 z-[201]"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+
+          {/* Imagen en pantalla completa - SIN RECORTES */}
+          <div 
+            className="relative max-w-[95vw] max-h-[90vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={property.images[imagenActual]}
+              alt={`${property.title} - Imagen ${imagenActual + 1} en pantalla completa`}
+              className="max-w-full max-h-[90vh] object-contain shadow-2xl rounded-lg"
+            />
+          </div>
+
+          {/* Instrucciones */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 text-white px-6 py-3 rounded-full text-sm backdrop-blur-md shadow-lg">
+            <span className="hidden sm:inline">Click fuera de la imagen o presiona ESC para cerrar</span>
+            <span className="sm:hidden">Toca fuera para cerrar</span>
+          </div>
+        </div>
       )}
     </>
   );

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const CompareContext = createContext();
 
@@ -32,14 +33,21 @@ export const CompareProvider = ({ children }) => {
 
   const addToCompare = (property) => {
     if (compareList.length >= 3) {
-      alert('Solo puedes comparar hasta 3 propiedades');
+      toast.error('Solo podés comparar hasta 3 propiedades', {
+        duration: 3000,
+      });
       return false;
     }
     if (compareList.find(p => p.id === property.id)) {
-      alert('Esta propiedad ya está en la comparación');
+      toast.error('Esta propiedad ya está en la comparación', {
+        duration: 3000,
+      });
       return false;
     }
     setCompareList([...compareList, property]);
+    toast.success('Propiedad agregada al comparador', {
+      duration: 2000,
+    });
     return true;
   };
 

@@ -2,6 +2,60 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import toast from 'react-hot-toast';
+
+// Componente interno de Modal de Confirmación
+const ConfirmModal = ({ isOpen, onClose, onConfirm, title, subtitle, confirmText, confirmColor, clientName }) => {
+  if (!isOpen) return null;
+
+  const colorClasses = {
+    bordo: 'bg-[#5B0F0F] hover:bg-[#4a0c0c]',
+    red: 'bg-red-600 hover:bg-red-700'
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-[100]"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform transition-all"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Título */}
+        <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
+          {title.replace('[Nombre]', clientName || '')}
+        </h3>
+        
+        {/* Subtítulo (opcional) */}
+        {subtitle && (
+          <p className="text-sm text-gray-600 mb-6 text-center">
+            {subtitle}
+          </p>
+        )}
+
+        {/* Botones */}
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={onClose}
+            className="flex-1 bg-[#E5E7EB] hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-2xl transition-colors text-base"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={() => {
+              onConfirm();
+              onClose();
+            }}
+            className={`flex-1 ${colorClasses[confirmColor]} text-white font-semibold py-3 px-6 rounded-2xl transition-colors text-base`}
+          >
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ReservasAdmin = () => {
   const { user, signOut } = useAuth();
@@ -10,6 +64,21 @@ const ReservasAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [filtroEstado, setFiltroEstado] = useState('todas');
   const [busqueda, setBusqueda] = useState('');
+  const [modalBloqueoAbierto, setModalBloqueoAbierto] = useState(false);
+  const [propiedades, setPropiedades] = useState([]);
+  const [formBloqueo, setFormBloqueo] = useState({
+    propiedad_id: '',
+    fecha_inicio: '',
+    fecha_fin: ''
+  });
+
+  // Estados para modales de confirmación
+  const [modalConfirm, setModalConfirm] = useState({
+    isOpen: false,
+    type: '', // 'aceptar', 'rechazar', 'eliminar'
+    reservaId: null,
+    clientName: ''
+  });
 
   useEffect(() => {
     if (!user) {
@@ -17,6 +86,7 @@ const ReservasAdmin = () => {
       return;
     }
     cargarReservas();
+    cargarPropiedades();
   }, [user, navigate]);
 
   const cargarReservas = async () => {
@@ -39,16 +109,14 @@ const ReservasAdmin = () => {
       setReservas(data || []);
     } catch (error) {
       console.error('Error cargando reservas:', error);
-      alert('Error al cargar las reservas');
+      toast.error('Error al cargar las reservas');
     } finally {
       setLoading(false);
     }
   };
 
   const cambiarEstado = async (id, nuevoEstado) => {
-    if (!confirm(`¿Seguro que quieres ${nuevoEstado === 'confirmada' ? 'confirmar' : nuevoEstado === 'rechazada' ? 'rechazar' : 'cancelar'} esta reserva?`)) {
-      return;
-    }
+    const loadingToast = toast.loading('Actualizando reserva...');
 
     try {
       const { error } = await supabase
@@ -58,12 +126,141 @@ const ReservasAdmin = () => {
 
       if (error) throw error;
 
-      alert(`Reserva ${nuevoEstado} exitosamente`);
+      const estadoTexto = nuevoEstado === 'confirmada' ? 'confirmada' : nuevoEstado === 'rechazada' ? 'rechazada' : 'cancelada';
+      toast.success(`Reserva ${estadoTexto} exitosamente`, {
+        id: loadingToast,
+      });
       cargarReservas();
     } catch (error) {
       console.error('Error actualizando reserva:', error);
-      alert('Error al actualizar la reserva');
+      toast.error('Error al actualizar la reserva', {
+        id: loadingToast,
+      });
     }
+  };
+
+  const abrirModalConfirmacion = (type, reservaId, clientName) => {
+    setModalConfirm({
+      isOpen: true,
+      type,
+      reservaId,
+      clientName
+    });
+  };
+
+  const cerrarModalConfirmacion = () => {
+    setModalConfirm({
+      isOpen: false,
+      type: '',
+      reservaId: null,
+      clientName: ''
+    });
+  };
+
+  const confirmarAccion = () => {
+    const { type, reservaId } = modalConfirm;
+    
+    if (type === 'aceptar') {
+      cambiarEstado(reservaId, 'confirmada');
+    } else if (type === 'rechazar') {
+      cambiarEstado(reservaId, 'rechazada');
+    } else if (type === 'eliminar') {
+      ejecutarEliminacion(reservaId);
+    }
+  };
+
+  const ejecutarEliminacion = async (id) => {
+    const loadingToast = toast.loading('Eliminando reserva...');
+
+    try {
+      const { error } = await supabase
+        .from('reservas')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Reserva eliminada exitosamente', {
+        id: loadingToast,
+      });
+      cargarReservas();
+    } catch (error) {
+      console.error('Error eliminando reserva:', error);
+      toast.error('Error al eliminar la reserva', {
+        id: loadingToast,
+      });
+    }
+  };
+
+  const cargarPropiedades = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('propiedades')
+        .select('id, titulo, tipo')
+        .eq('activa', true)
+        .order('titulo');
+
+      if (error) throw error;
+      setPropiedades(data || []);
+    } catch (error) {
+      console.error('Error cargando propiedades:', error);
+      toast.error('Error al cargar propiedades');
+    }
+  };
+
+  const crearBloqueoManual = async (e) => {
+    e.preventDefault();
+    
+    if (!formBloqueo.propiedad_id || !formBloqueo.fecha_inicio || !formBloqueo.fecha_fin) {
+      toast.error('Todos los campos son obligatorios');
+      return;
+    }
+
+    // Calcular días (lógica de quintas)
+    const inicio = new Date(formBloqueo.fecha_inicio);
+    const fin = new Date(formBloqueo.fecha_fin);
+    const diffTime = Math.abs(fin - inicio);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const cantidadDias = diffDays + 1; // Incluye día de entrada y salida
+
+    const loadingToast = toast.loading('Creando bloqueo...');
+
+    try {
+      const { error } = await supabase
+        .from('reservas')
+        .insert([{
+          propiedad_id: formBloqueo.propiedad_id,
+          nombre_cliente: 'ADMIN_BLOCK',
+          email_cliente: 'admin@braidot.com',
+          telefono_cliente: '---',
+          fecha_inicio: formBloqueo.fecha_inicio,
+          fecha_fin: formBloqueo.fecha_fin,
+          cantidad_personas: 0,
+          cantidad_noches: cantidadDias,
+          precio_total: 0,
+          notas: 'Bloqueo administrativo',
+          estado: 'confirmada'
+        }]);
+
+      if (error) throw error;
+
+      toast.success('Bloqueo creado exitosamente', {
+        id: loadingToast,
+      });
+      
+      setModalBloqueoAbierto(false);
+      setFormBloqueo({ propiedad_id: '', fecha_inicio: '', fecha_fin: '' });
+      cargarReservas();
+    } catch (error) {
+      console.error('Error creando bloqueo:', error);
+      toast.error('Error al crear el bloqueo', {
+        id: loadingToast,
+      });
+    }
+  };
+
+  const eliminarReserva = async (id, nombreCliente) => {
+    abrirModalConfirmacion('eliminar', id, nombreCliente);
   };
 
   const handleLogout = async () => {
@@ -157,12 +354,23 @@ const ReservasAdmin = () => {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="bg-white text-braidot-primary-bordo hover:bg-braidot-neutral-100 px-6 py-2 rounded-lg transition-all duration-300 font-semibold shadow-md hover:shadow-lg"
-          >
-            Cerrar Sesión
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setModalBloqueoAbierto(true)}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-all duration-300 font-semibold shadow-md hover:shadow-lg flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Bloqueo Manual
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-white text-braidot-primary-bordo hover:bg-braidot-neutral-100 px-6 py-2 rounded-lg transition-all duration-300 font-semibold shadow-md hover:shadow-lg"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </header>
 
@@ -327,13 +535,13 @@ const ReservasAdmin = () => {
                         {reserva.estado === 'pendiente' && (
                           <>
                             <button
-                              onClick={() => cambiarEstado(reserva.id, 'confirmada')}
+                              onClick={() => abrirModalConfirmacion('aceptar', reserva.id, reserva.nombre_cliente)}
                               className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
                             >
                               ✅ Confirmar
                             </button>
                             <button
-                              onClick={() => cambiarEstado(reserva.id, 'rechazada')}
+                              onClick={() => abrirModalConfirmacion('rechazar', reserva.id, reserva.nombre_cliente)}
                               className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
                             >
                               ❌ Rechazar
@@ -349,6 +557,17 @@ const ReservasAdmin = () => {
                             🚫 Cancelar
                           </button>
                         )}
+
+                        <button
+                          onClick={() => eliminarReserva(reserva.id, reserva.nombre_cliente)}
+                          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors ml-auto"
+                          title="Eliminar reserva"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          Eliminar
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -372,6 +591,144 @@ const ReservasAdmin = () => {
           )}
         </div>
       </main>
+
+      {/* Modal de Bloqueo Manual */}
+      {modalBloqueoAbierto && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-gradient-to-r from-braidot-primary-bordo to-braidot-primary-bordo-light p-6 rounded-t-xl">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Bloqueo Manual
+                </h2>
+                <button
+                  onClick={() => {
+                    setModalBloqueoAbierto(false);
+                    setFormBloqueo({ propiedad_id: '', fecha_inicio: '', fecha_fin: '' });
+                  }}
+                  className="text-white hover:text-braidot-blanco2 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-braidot-blanco2 text-sm mt-2">
+                Crea un bloqueo administrativo para reservar fechas sin cliente
+              </p>
+            </div>
+
+            <form onSubmit={crearBloqueoManual} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-braidot-negro mb-2">
+                  Propiedad <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formBloqueo.propiedad_id}
+                  onChange={(e) => setFormBloqueo({ ...formBloqueo, propiedad_id: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo"
+                >
+                  <option value="">Seleccionar propiedad</option>
+                  {propiedades.map((prop) => (
+                    <option key={prop.id} value={prop.id}>
+                      {prop.titulo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-braidot-negro mb-2">
+                  Fecha Inicio <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={formBloqueo.fecha_inicio}
+                  onChange={(e) => setFormBloqueo({ ...formBloqueo, fecha_inicio: e.target.value })}
+                  required
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-braidot-negro mb-2">
+                  Fecha Fin <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={formBloqueo.fecha_fin}
+                  onChange={(e) => setFormBloqueo({ ...formBloqueo, fecha_fin: e.target.value })}
+                  required
+                  min={formBloqueo.fecha_inicio || new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2 border border-braidot-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-braidot-primary-bordo"
+                />
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>Nota:</strong> Este bloqueo aparecerá en el calendario como "ADMIN_BLOCK" y evitará que los usuarios reserven estas fechas.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModalBloqueoAbierto(false);
+                    setFormBloqueo({ propiedad_id: '', fecha_inicio: '', fecha_fin: '' });
+                  }}
+                  className="flex-1 bg-braidot-neutral-200 hover:bg-braidot-neutral-300 text-braidot-negro font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-braidot-primary-bordo hover:bg-braidot-primary-bordo-dark text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Crear Bloqueo
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Confirmación Estandarizado */}
+      <ConfirmModal
+        isOpen={modalConfirm.isOpen}
+        onClose={cerrarModalConfirmacion}
+        onConfirm={confirmarAccion}
+        clientName={modalConfirm.clientName}
+        title={
+          modalConfirm.type === 'aceptar' 
+            ? '¿Aceptar reserva de [Nombre]?'
+            : modalConfirm.type === 'rechazar'
+            ? '¿Rechazar reserva de [Nombre]?'
+            : '¿Eliminar reserva de [Nombre]?'
+        }
+        subtitle={
+          modalConfirm.type === 'eliminar' 
+            ? 'Esta acción no se puede deshacer' 
+            : null
+        }
+        confirmText={
+          modalConfirm.type === 'aceptar'
+            ? 'Aceptar'
+            : modalConfirm.type === 'rechazar'
+            ? 'Rechazar'
+            : 'Eliminar'
+        }
+        confirmColor={
+          modalConfirm.type === 'aceptar'
+            ? 'bordo'
+            : 'red'
+        }
+      />
     </div>
   );
 };
